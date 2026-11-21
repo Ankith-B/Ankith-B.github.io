@@ -131,16 +131,20 @@
     Auth.signup(u, em, p).then(done, function (m) { err.textContent = String(m); });
   });
 
-  /* ---------- home grid ---------- */
+  /* ---------- research grid ---------- */
   function renderTiles() {
     var box = $("#tiles"); box.textContent = "";
+    if (!D.length) {
+      for (var i = 0; i < 3; i++) box.appendChild(el("div", { class: "slot", "aria-hidden": "true" }));
+      return;
+    }
     var saved = savedList();
     D.forEach(function (d) {
       var t = el("button", { class: "tile", type: "button", "aria-label": d.name + ", open full breakdown" }, [
-        el("span", { class: "cat", text: d.category }),
+        el("span", { class: "cat", text: d.category || "" }),
         el("h3", { text: d.name }),
-        el("p", { text: d.blurb }),
-        el("span", { class: "more" }, [el("span", { text: "Read the breakdown →" }), el("span", { class: "saved", text: saved.indexOf(d.id) >= 0 ? "★ Saved" : "" })])
+        el("p", { text: d.blurb || "" }),
+        el("span", { class: "more" }, [el("span", { text: "Read more →" }), el("span", { text: saved.indexOf(d.id) >= 0 ? "★ Saved" : "" })])
       ]);
       t.onclick = function () { location.hash = "#/d/" + d.id; };
       box.appendChild(t);
@@ -148,63 +152,26 @@
   }
 
   /* ---------- detail view ---------- */
-  function list(tag, items) { var n = el(tag); items.forEach(function (i) { n.appendChild(el("li", { text: i })); }); return n; }
-  function sect(id, num, title, children) {
-    var s = el("section", { id: id }, [el("h2", {}, [el("small", { text: num }), title])]);
-    children.forEach(function (c) { s.appendChild(c); });
-    return s;
-  }
   function renderDetail(d) {
     var root = $("#detailInner"); root.textContent = "";
-    var back = el("button", { class: "back", type: "button", text: "← All diseases" });
+    var back = el("button", { class: "back", type: "button", text: "← Back" });
     back.onclick = function () { location.hash = "#/"; };
-
     var isSaved = savedList().indexOf(d.id) >= 0;
-    var saveBtn = el("button", { class: "btn line", type: "button", text: isSaved ? "★ Saved to your list" : "☆ Save to my list" });
+    var saveBtn = el("button", { class: "btn solid", type: "button", text: isSaved ? "★ Saved" : "☆ Save" });
     saveBtn.onclick = function () {
       if (!Auth.current()) { openAuth("signup", function () { toggleSaved(d.id); renderDetail(d); }); return; }
       toggleSaved(d.id); renderDetail(d);
     };
-
     var head = el("div", { class: "d-head" }, [
-      el("div", { class: "cat", text: d.category }),
-      el("h1", { text: d.name }),
-      el("div", { class: "stamps" }, [
-        el("span", { class: "stamp", text: "Not FDA approved" }),
-        el("span", { class: "stamp", text: "Not tested in humans" }),
-        el("span", { class: "stamp", text: "Concept stage" })
-      ]),
-      el("div", { class: "row" }, [saveBtn, el("span", { class: "hint", text: Auth.current() ? "" : "Free account needed to save." })])
+      el("div", { class: "cat", text: d.category || "" }), el("h1", { text: d.name }), saveBtn
     ]);
-
-    var sections = [
-      ["overview", "Overview", [el("p", { text: d.overview })]],
-      ["problem", "What goes wrong", [list("ul", d.problem)]],
-      ["idea", "The idea", [el("div", { class: "idea" }, [el("h3", { text: d.ideaTitle }), el("p", { text: d.idea })])]],
-      ["how", "How it would work", [list("ol", d.steps)]],
-      ["evidence", "What the evidence says so far", [el("p", { text: d.evidence })]],
-      ["unknowns", "What we don't know", [list("ul", d.unknowns)]],
-      ["path", "What it would take to reach patients", [list("ol", d.path)]],
-      ["note", "Before you go", [el("div", { class: "callout" }, [
-        el("p", { text: "This page describes a research concept. It has not been approved by the FDA, has not been tested in humans, and is not a treatment, a cure, or medical advice." }),
-        el("p", { text: "Other groups may already be running related trials. You can search for them at clinicaltrials.gov. Please talk with a qualified clinician about any health decision." })
-      ])]]
-    ];
-
-    var toc = el("nav", { class: "toc", "aria-label": "On this page" }, [el("b", { text: "On this page" })]);
     var body = el("div", { class: "body" });
-    sections.forEach(function (s, i) {
-      toc.appendChild(el("a", { href: "#/d/" + d.id, "data-sec": s[0], text: s[1] }));
-      body.appendChild(sect("sec-" + s[0], String(i + 1).padStart(2, "0"), s[1], s[2]));
+    (d.sections || []).forEach(function (s) {
+      var sec = el("section", {}, [el("h2", { text: s.title })]);
+      (s.body || []).forEach(function (p) { sec.appendChild(el("p", { text: p })); });
+      body.appendChild(sec);
     });
-    toc.addEventListener("click", function (e) {
-      var a = e.target.closest("a"); if (!a) return;
-      e.preventDefault();
-      var t = document.getElementById("sec-" + a.getAttribute("data-sec")); if (t) t.scrollIntoView({ behavior: "smooth" });
-    });
-
-    root.appendChild(back); root.appendChild(head);
-    root.appendChild(el("div", { class: "d-layout" }, [toc, body]));
+    root.appendChild(back); root.appendChild(head); root.appendChild(body);
     document.title = d.name + " | Cure A Disease";
   }
 
@@ -217,7 +184,7 @@
       renderDetail(d); window.scrollTo(0, 0);
     } else {
       $("#detail").hidden = true; $("#home").hidden = false;
-      renderTiles(); document.title = "Cure A Disease | Nonprofit disease research";
+      renderTiles(); document.title = "Cure A Disease | Nonprofit research organization";
     }
   }
   window.addEventListener("hashchange", route);
@@ -233,6 +200,8 @@
     });
   });
 
+  var cta = $("#heroCta");
+  if (cta) cta.onclick = function () { openAuth("signup"); };
   renderAuthSlot();
   route();
 })();
