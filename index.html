@@ -3,175 +3,178 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cure A Disease | Open computational research on rare diseases</title>
-<meta name="description" content="Open, computational research on rare and neglected diseases. We generate drug-repurposing hypotheses from public data and publish methods, code, and results. Predictions only; not medical advice.">
+<title>Cure A Disease | Nonprofit disease research</title>
+<meta name="description" content="Cure A Disease is a nonprofit research initiative. We publish plain-language breakdowns of early-stage ideas for treating hard diseases. Concepts only: not FDA approved, not tested in humans.">
 <meta property="og:title" content="Cure A Disease">
-<meta property="og:description" content="Open computational research on rare and neglected diseases.">
+<meta property="og:description" content="A nonprofit research initiative publishing early-stage ideas for hard-to-treat diseases.">
 <meta property="og:type" content="website">
-<style>
-  :root{
-    --ink:#10222b; --muted:#4b606b; --line:#d6e0e4; --bg:#f6f9fa; --card:#ffffff;
-    --teal:#0e6b73; --teal-dark:#094a50; --accent:#d9822b; --warn-bg:#fff6e8; --warn-line:#f0cf9c;
-    --max:1040px;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{ --ink:#e8f1f4; --muted:#a3b7bf; --line:#254049; --bg:#0b171c; --card:#11232a;
-           --teal:#52c2cb; --teal-dark:#8fdde3; --accent:#f0a65a; --warn-bg:#2a2112; --warn-line:#5a4524; }
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);
-       font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:0 0 .5em}
-  a{color:var(--teal)} a:hover{color:var(--teal-dark)}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
-  .skip{position:absolute;left:-999px} .skip:focus{left:12px;top:12px;background:var(--card);padding:8px 12px;z-index:10}
-
-  header.site{border-bottom:1px solid var(--line);background:var(--card)}
-  header.site .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .brand{font-family:Georgia,serif;font-weight:700;font-size:1.2rem;color:var(--ink);text-decoration:none}
-  .brand span{color:var(--accent)}
-  nav a{margin-left:22px;text-decoration:none;color:var(--muted);font-size:.95rem}
-  nav a:hover{color:var(--teal)}
-
-  .hero{padding:88px 0 72px}
-  .eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
-  .hero h1{font-size:clamp(2.2rem,5.5vw,3.7rem);max-width:17ch}
-  .hero p.lead{font-size:1.2rem;color:var(--muted);max-width:60ch;margin:18px 0 28px}
-  .btn{display:inline-block;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-right:10px}
-  .btn.primary{background:var(--teal);color:#fff} .btn.primary:hover{background:var(--teal-dark);color:#fff}
-  .btn.ghost{border:1.5px solid var(--line);color:var(--ink)} .btn.ghost:hover{border-color:var(--teal);color:var(--teal)}
-
-  .notice{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:16px 20px;font-size:.95rem}
-  .notice strong{color:var(--accent)}
-
-  section{padding:64px 0;border-top:1px solid var(--line)}
-  section h2{font-size:clamp(1.6rem,3vw,2.1rem)}
-  .sub{color:var(--muted);max-width:64ch;margin-bottom:34px}
-
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;counter-reset:s;padding:0;list-style:none;margin:0}
-  .steps li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;counter-increment:s}
-  .steps li::before{content:counter(s);display:inline-flex;width:30px;height:30px;border-radius:50%;
-       background:var(--teal);color:#fff;align-items:center;justify-content:center;font-weight:700;margin-bottom:12px}
-  .steps h3{font-size:1.1rem}
-  .steps p{margin:0;color:var(--muted);font-size:.96rem}
-
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
-  .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-       padding:3px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted);margin-bottom:10px}
-  .card h3{font-size:1.1rem} .card p{margin:0;color:var(--muted);font-size:.96rem}
-
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:36px}
-  @media(max-width:760px){.two{grid-template-columns:1fr} nav a:not(:last-child){display:none}}
-  ul.checks{padding-left:0;list-style:none;margin:0}
-  ul.checks li{padding-left:28px;position:relative;margin-bottom:10px}
-  ul.checks li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:700}
-  ul.limits li::before{content:"–";color:var(--accent)}
-
-  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:.9rem;background:var(--card)}
-  footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between}
-  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-</style>
+<meta name="theme-color" content="#1a2a5a">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 92C30 76 10 58 10 36 10 22 20 12 32 12c9 0 15 5 18 11 3-6 9-11 18-11 12 0 22 10 22 24 0 22-20 40-40 56z' fill='%232b7e89'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<!-- Shared heart artwork: navy-to-teal, glossy, with vessels -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gBody" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#101d47"/>
+      <stop offset="0.3" stop-color="#1f4a9a"/>
+      <stop offset="0.68" stop-color="#3a9fb0"/>
+      <stop offset="1" stop-color="#6fd0d2"/>
+    </linearGradient>
+    <linearGradient id="gVessel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f66b0"/>
+      <stop offset="1" stop-color="#5cc3cb"/>
+    </linearGradient>
+    <radialGradient id="gGloss" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gShade" cx="0.7" cy="0.95" r="0.6">
+      <stop offset="0" stop-color="#06102e" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#06102e" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="heart" viewBox="-4 -4 108 106">
+      <!-- great vessels -->
+      <path d="M53 32C51 13 64 6 76 14" fill="none" stroke="url(#gVessel)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M41 30C38 17 33 11 26 13" fill="none" stroke="url(#gVessel)" stroke-width="7.5" stroke-linecap="round"/>
+      <path d="M63 26C66 18 67 12 66 6" fill="none" stroke="url(#gVessel)" stroke-width="6.5" stroke-linecap="round"/>
+      <path d="M53 30C52 14 63 8 73 14" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2.4" stroke-linecap="round"/>
+      <!-- body -->
+      <path d="M50 93C30 77 9 59 9 37 9 23 19 13 32 13c8 0 14 4 18 10 4-6 10-10 18-10 13 0 23 10 23 24 0 22-21 40-41 56z" fill="url(#gBody)"/>
+      <path d="M50 93C30 77 9 59 9 37 9 23 19 13 32 13c8 0 14 4 18 10 4-6 10-10 18-10 13 0 23 10 23 24 0 22-21 40-41 56z" fill="url(#gShade)"/>
+      <!-- grooves and coronary vessels -->
+      <path d="M48 24C44 46 50 68 52 90" fill="none" stroke="#06102e" stroke-opacity=".3" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M44 28C36 40 34 56 40 74" fill="none" stroke="#aee4ea" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M36 44C28 44 22 50 20 58" fill="none" stroke="#aee4ea" stroke-opacity=".4" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M57 30C66 40 70 54 62 72" fill="none" stroke="#d6f4f6" stroke-opacity=".5" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- gloss -->
+      <ellipse cx="28" cy="31" rx="13" ry="7" transform="rotate(-38 28 31)" fill="url(#gGloss)"/>
+      <ellipse cx="72" cy="30" rx="6" ry="3.2" transform="rotate(35 72 30)" fill="url(#gGloss)" opacity=".55"/>
+    </symbol>
+  </defs>
+</svg>
+
 <a class="skip" href="#main">Skip to content</a>
+
+<div class="strip">
+  <div class="wrap">
+    <span><b>Cure A Disease</b> is a nonprofit research initiative.</span>
+    <span class="r">Early-stage ideas only. Not medical advice.</span>
+  </div>
+</div>
 
 <header class="site">
   <div class="wrap">
-    <a class="brand" href="#top">Cure<span>A</span>Disease</a>
-    <nav aria-label="Main">
-      <a href="#approach">Approach</a>
-      <a href="#research">Research</a>
-      <a href="#transparency">Transparency</a>
-      <a href="#involved">Get involved</a>
+    <a class="brand" href="#/" aria-label="Cure A Disease, home">
+      <span class="heart-wrap"><svg class="heart" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true"><use href="#heart"/></svg></span>
+      <span class="word">cure<i>a</i>disease</span>
+    </a>
+    <nav class="main" aria-label="Main">
+      <a class="link" href="#/" data-go="diseases">Diseases</a>
+      <a class="link" href="#/" data-go="about">About</a>
+      <span id="authSlot"></span>
     </nav>
   </div>
 </header>
 
 <main id="main">
-  <div class="wrap hero" id="top">
-    <div class="eyebrow">Open computational research</div>
-    <h1>Finding leads for diseases that few people study.</h1>
-    <p class="lead">Thousands of rare diseases have no approved treatment. We use public biomedical data, AI, and simulation to generate
-      <em>testable hypotheses</em> about existing drugs, then publish our methods, code, and results openly so that clinicians and labs can follow up.</p>
-    <a class="btn primary" href="#research">See the research</a>
-    <a class="btn ghost" href="#transparency">How we stay honest</a>
-    <p></p>
-    <div class="notice" role="note">
-      <strong>Important:</strong> Everything on this site is a computational prediction. None of it has been tested in a laboratory or
-      by a regulator, none of it is a treatment or a cure, and none of it is medical advice. Please talk to a qualified clinician about any health decision.
+  <!-- Home -->
+  <div id="home">
+    <div class="wrap hero">
+      <div class="grid">
+        <div class="heart-wrap" style="justify-self:center">
+          <svg class="heart" width="190" height="190" viewBox="0 0 100 100" role="img" aria-label="Cure A Disease logo: a blue and teal heart"><use href="#heart"/></svg>
+        </div>
+        <div>
+          <div class="badge">Nonprofit organization</div>
+          <h1>Cure <i>A</i> Disease</h1>
+          <p class="lead">We write open, plain-language breakdowns of early-stage ideas for diseases that still have no cure: what goes wrong in the body, how an idea might fix it, what is unknown, and what it would take to reach patients.</p>
+        </div>
+      </div>
+      <div class="notice" role="note"><strong>Please read:</strong> every idea on this site is a research concept. None is FDA approved, none has been tested in humans, and none is a treatment or medical advice. Talk to a doctor about any health decision.</div>
     </div>
+
+    <section class="diseases" id="diseases">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Pick a disease</h2>
+          <p>Select a box for the full breakdown.</p>
+        </div>
+        <div class="tiles" id="tiles"></div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="wrap cols">
+        <div>
+          <h2>Why a nonprofit</h2>
+          <p>Hard diseases are often neglected because the market for them is small, slow, or risky. We are not here to sell anything. Our goal is to make good ideas easier to understand, criticise, and hand to people with the labs and licences to test them.</p>
+          <p>We would rather say "we don't know yet" than oversell. Each breakdown lists its unknowns right next to its promise.</p>
+        </div>
+        <ul class="facts">
+          <li><b>We do</b><span>Explain biology and research ideas in plain language and show our reasoning.</span></li>
+          <li><b>We don't</b><span>Claim a cure, give medical advice, run clinical trials, or ask patients for money or health data.</span></li>
+          <li><b>Status</b><span>Every idea is at concept stage. "Not FDA approved" and "not tested in humans" are on every page for a reason.</span></li>
+          <li><b>Accounts</b><span>Free. An account lets you save diseases to a personal list.</span></li>
+        </ul>
+      </div>
+    </section>
   </div>
 
-  <section id="approach">
-    <div class="wrap">
-      <h2>Our approach</h2>
-      <p class="sub">A repeatable pipeline from public data to a published, checkable hypothesis.</p>
-      <ol class="steps">
-        <li><h3>Choose a disease</h3><p>We pick conditions that are rare, neglected, and have open data and an active patient community.</p></li>
-        <li><h3>Mine public data</h3><p>We combine open drug, gene, and disease databases to score which existing compounds might be relevant.</p></li>
-        <li><h3>Stress-test</h3><p>We check whether our method re-discovers known drug-disease pairs before trusting any new prediction.</p></li>
-        <li><h3>Publish openly</h3><p>We release ranked candidates, code, and limitations as preprints and, where possible, in journals.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section id="research">
-    <div class="wrap">
-      <h2>Research</h2>
-      <p class="sub">Results will be listed here as they are completed, each with its methods, code, and limitations.</p>
-      <div class="cards">
-        <article class="card"><span class="tag">In progress</span><h3>Pilot study: [disease name]</h3>
-          <p>[One or two sentences on what is being analyzed and which data sources are used.]</p></article>
-        <article class="card"><span class="tag">Planned</span><h3>Method validation</h3>
-          <p>Testing how well our scoring approach recovers known drug-disease relationships.</p></article>
-        <article class="card"><span class="tag">Planned</span><h3>Open datasets and code</h3>
-          <p>A public repository so anyone can reproduce and criticize the analyses.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <section id="transparency">
-    <div class="wrap two">
-      <div>
-        <h2>What we do</h2>
-        <ul class="checks">
-          <li>Publish methods, code, and data sources.</li>
-          <li>Report negative and uncertain results.</li>
-          <li>State every limitation next to every result.</li>
-          <li>Hand promising leads to people who can test them.</li>
-        </ul>
-      </div>
-      <div>
-        <h2>What we don't do</h2>
-        <ul class="checks limits">
-          <li>Claim a cure or recommend a treatment.</li>
-          <li>Run clinical trials or give medical advice.</li>
-          <li>Treat a prediction as proof it works.</li>
-          <li>Ask patients for money or personal health data.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="involved">
-    <div class="wrap">
-      <h2>Get involved</h2>
-      <p class="sub">We are looking for clinicians, wet-lab researchers, and patient foundations who could review or test a computational lead, and for experts willing to advise.</p>
-      <p><a class="btn primary" href="mailto:[your-email@example.com]">Contact us</a>
-         <a class="btn ghost" href="https://github.com/Ankith-B">Code on GitHub</a></p>
-    </div>
-  </section>
+  <!-- Detail -->
+  <article id="detail" class="detail" hidden><div class="wrap" id="detailInner"></div></article>
 </main>
 
 <footer>
   <div class="wrap">
-    <div>© 2026 Cure A Disease. Computational research only; not medical advice.</div>
-    <div><a href="https://github.com/Ankith-B">GitHub</a></div>
+    <p>© 2026 Cure A Disease, a nonprofit research initiative. Content is educational and describes unproven research concepts. It is not medical advice, and nothing here has been approved by the FDA or tested in humans.</p>
+    <a href="https://github.com/Ankith-B">GitHub</a>
   </div>
 </footer>
 
-<!-- Optional analytics (Simple Analytics): paste the snippet from your dashboard here -->
+<!-- Auth -->
+<dialog id="authDlg" aria-labelledby="authTitle">
+  <div class="m-top">
+    <strong id="authTitle" style="font-family:var(--serif);font-size:1.25rem">Your account</strong>
+    <button class="m-x" id="authClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabLogin" aria-selected="true">Log in</button>
+    <button role="tab" id="tabSignup" aria-selected="false">Sign up</button>
+  </div>
+
+  <form id="loginForm" novalidate>
+    <label for="liId">Email or username</label>
+    <input id="liId" autocomplete="username" required>
+    <label for="liPw">Password</label>
+    <input id="liPw" type="password" autocomplete="current-password" required>
+    <p class="err" id="liErr" role="alert"></p>
+    <button class="btn solid" type="submit">Log in</button>
+  </form>
+
+  <form id="signupForm" novalidate hidden>
+    <label for="suUser">Username</label>
+    <input id="suUser" autocomplete="username" required>
+    <div class="hint">3 to 20 letters, numbers, dots, dashes or underscores.</div>
+    <label for="suEmail">Email</label>
+    <input id="suEmail" type="email" autocomplete="email" required>
+    <label for="suPw">Password</label>
+    <input id="suPw" type="password" autocomplete="new-password" required>
+    <div class="hint">At least 8 characters.</div>
+    <label for="suPw2">Confirm password</label>
+    <input id="suPw2" type="password" autocomplete="new-password" required>
+    <p class="err" id="suErr" role="alert"></p>
+    <button class="btn solid" type="submit">Create account</button>
+    <p class="fine">You can log in later with either your email or your username.</p>
+  </form>
+</dialog>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
