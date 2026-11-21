@@ -13,6 +13,18 @@
     return n;
   };
 
+  /* ---------- one-time reset ----------
+     Bump RESET_VERSION to wipe all locally stored accounts, sessions and saved lists
+     the next time each visitor opens the site. */
+  var RESET_VERSION = "2026-11-21-reset";
+  try {
+    if (localStorage.getItem("cad_reset") !== RESET_VERSION) {
+      Object.keys(localStorage).forEach(function (k) { if (k.indexOf("cad_") === 0) localStorage.removeItem(k); });
+      sessionStorage.clear();
+      localStorage.setItem("cad_reset", RESET_VERSION);
+    }
+  } catch (e) {}
+
   /* ---------- storage (every access guarded) ---------- */
   function load(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
