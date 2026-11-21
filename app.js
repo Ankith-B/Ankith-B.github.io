@@ -113,7 +113,10 @@
     if (s) {
       var out = el("button", { class: "btn line", type: "button", text: "Log out" });
       out.onclick = function () { Auth.logout(); renderAuthSlot(); route(); };
-      slot.appendChild(el("span", { class: "who" }, [el("span", {}, ["Hi, ", el("b", { text: s.username })]), out]));
+      var kids = [el("span", {}, ["Hi, ", el("b", { text: s.username })])];
+      if (s.username.toLowerCase() === "owner") { var ib = el("a", { class: "btn line", href: "#/inbox", text: "Inbox" }); kids.push(ib); }
+      kids.push(out);
+      slot.appendChild(el("span", { class: "who" }, kids));
     } else {
       var li = el("button", { class: "btn line", type: "button", text: "Log in" });
       var su = el("button", { class: "btn solid", type: "button", text: "Sign up" });
@@ -208,10 +211,118 @@
     document.title = d.name + " | Cure A Disease";
   }
 
+
+  /* ---------- contact + owner inbox (Supabase REST, no SDK) ---------- */
+  var CFG = window.CAD_CONFIG || {};
+  var sbOn = !!(CFG.supabaseUrl && CFG.supabaseKey);
+  function sb(path, opts, token) {
+    opts = opts || {};
+    var headers = { apikey: CFG.supabaseKey, Authorization: "Bearer " + (token || CFG.supabaseKey), "Content-Type": "application/json" };
+    Object.keys(opts.headers || {}).forEach(function (k) { headers[k] = opts.headers[k]; });
+    return fetch(CFG.supabaseUrl.replace(/\/$/, "") + path, { method: opts.method || "GET", headers: headers, body: opts.body })
+      .then(function (r) {
+        if (!r.ok) return r.text().then(function (t) { var e = new Error(t || r.status); e.status = r.status; throw e; });
+        return r.status === 204 ? null : r.text().then(function (t) { return t ? JSON.parse(t) : null; });
+      });
+  }
+  function isOwner() { var s = Auth.current(); return !!s && s.username.toLowerCase() === "owner"; }
+
+  if (sbOn) {
+    $("#contact").hidden = false; $("#navContact").hidden = false;
+    var kinds = document.getElementsByName("kind");
+    Array.prototype.forEach.call(kinds, function (r) {
+      r.addEventListener("change", function () { $("#diseaseRow").hidden = document.querySelector("input[name=kind]:checked").value !== "disease_request"; });
+    });
+    $("#contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var err = $("#cErr"); err.textContent = "";
+      if ($("#cTrap").value) return;
+      var kind = document.querySelector("input[name=kind]:checked").value;
+      var body = $("#cMsg").value.trim(), disease = $("#cDisease").value.trim(), email = $("#cEmail").value.trim();
+      if (kind === "disease_request" && !disease) { err.textContent = "Tell us which disease."; return; }
+      if (!body) { err.textContent = "Please write a message."; return; }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = "That email address doesn't look right."; return; }
+      var last = load("cad_last_msg", 0);
+      if (Date.now() - last < 30000) { err.textContent = "Please wait a moment before sending another message."; return; }
+      var btn = $("#cSend"); btn.disabled = true; btn.textContent = "Sending\u2026";
+      var cur = Auth.current();
+      var row = { kind: kind, body: body, disease: kind === "disease_request" ? disease : null,
+                  name: $("#cName").value.trim() || null, email: email || null, username: cur ? cur.username : null };
+      sb("/rest/v1/messages", { method: "POST", body: JSON.stringify(row), headers: { Prefer: "return=minimal" } }).then(function () {
+        save("cad_last_msg", Date.now());
+        var f = $("#contactForm"); f.parentNode.replaceChild(el("div", { class: "ok", role: "status", text: "Thank you. Your message has been sent to our team." }), f);
+      }, function () {
+        err.textContent = "Sorry, that didn't send. Please try again in a moment.";
+        btn.disabled = false; btn.textContent = "Send message";
+      });
+    });
+  }
+
+  function owner() { try { return JSON.parse(sessionStorage.getItem("cad_owner") || "null"); } catch (e) { return null; } }
+  function setOwner(v) { try { if (v) sessionStorage.setItem("cad_owner", JSON.stringify(v)); else sessionStorage.removeItem("cad_owner"); } catch (e) {} }
+
+  function renderInbox() {
+    var root = $("#inboxInner"); root.textContent = "";
+    var back = el("button", { class: "back", type: "button", text: "\u2190 Back to site" });
+    back.onclick = function () { location.hash = "#/"; };
+    root.appendChild(back);
+    root.appendChild(el("div", { class: "d-head" }, [el("div", { class: "cat", text: "Owner only" }), el("h1", { text: "Inbox" })]));
+    if (!sbOn) { root.appendChild(el("p", { text: "The inbox isn't connected yet. Add your Supabase details to config.js." })); return; }
+    if (!isOwner()) { root.appendChild(el("p", { text: "Log in to the Owner account to view this page." })); return; }
+    var o = owner();
+    if (!o) {
+      var f = el("form", { class: "ib-login", novalidate: "novalidate" }, [
+        el("label", { for: "ibE", text: "Owner email" }), el("input", { id: "ibE", type: "email", autocomplete: "username" }),
+        el("label", { for: "ibP", text: "Password" }), el("input", { id: "ibP", type: "password", autocomplete: "current-password" }),
+        el("p", { class: "err", id: "ibErr", role: "alert" }),
+        el("button", { class: "btn solid", type: "submit", text: "Open inbox" })
+      ]);
+      f.addEventListener("submit", function (e) {
+        e.preventDefault();
+        sb("/auth/v1/token?grant_type=password", { method: "POST", body: JSON.stringify({ email: $("#ibE").value.trim(), password: $("#ibP").value }) })
+          .then(function (r) { setOwner({ token: r.access_token }); renderInbox(); },
+                function () { $("#ibErr").textContent = "Those details didn't work."; });
+      });
+      root.appendChild(f); return;
+    }
+    var out = el("button", { class: "btn line", type: "button", text: "Sign out of inbox", style: "color:var(--ink);border-color:var(--line);margin-bottom:20px" });
+    out.onclick = function () { setOwner(null); renderInbox(); };
+    var list = el("div", {}, [el("p", { text: "Loading\u2026" })]);
+    root.appendChild(out); root.appendChild(list);
+    sb("/rest/v1/messages?select=*&order=created_at.desc", {}, o.token).then(function (rows) {
+      list.textContent = "";
+      if (!rows.length) { list.appendChild(el("p", { text: "No messages yet." })); return; }
+      rows.forEach(function (m) {
+        var meta = el("div", { class: "meta" }, [
+          el("span", { class: "tag", text: m.kind === "disease_request" ? "Disease request" : "Message" }),
+          el("span", { text: new Date(m.created_at).toLocaleString() })
+        ]);
+        if (m.disease) meta.appendChild(el("span", {}, ["Disease: ", el("b", { text: m.disease })]));
+        if (m.name) meta.appendChild(el("span", { text: "From: " + m.name }));
+        if (m.email) meta.appendChild(el("span", {}, ["Reply: ", el("a", { href: "mailto:" + encodeURIComponent(m.email).replace("%40", "@"), text: m.email })]));
+        if (m.username) meta.appendChild(el("span", { text: "Account: " + m.username }));
+        var del = el("button", { class: "del", type: "button", text: "Delete" });
+        del.onclick = function () {
+          if (!confirm("Delete this message?")) return;
+          sb("/rest/v1/messages?id=eq." + m.id, { method: "DELETE" }, o.token).then(renderInbox);
+        };
+        list.appendChild(el("div", { class: "msg" }, [meta, el("p", { text: m.body }), del]));
+      });
+    }, function (e) {
+      if (e.status === 401) { setOwner(null); renderInbox(); }
+      else list.textContent = "Couldn't load messages.";
+    });
+  }
+
   /* ---------- routing ---------- */
   function route() {
     var m = /^#\/d\/([\w-]+)/.exec(location.hash);
     var d = m && D.filter(function (x) { return x.id === m[1]; })[0];
+    if (location.hash === "#/inbox") {
+      $("#home").hidden = true; $("#detail").hidden = true; $("#inbox").hidden = false;
+      renderInbox(); window.scrollTo(0, 0); document.title = "Inbox | Cure A Disease"; return;
+    }
+    $("#inbox").hidden = true;
     if (d) {
       $("#home").hidden = true; $("#detail").hidden = false;
       renderDetail(d); window.scrollTo(0, 0);

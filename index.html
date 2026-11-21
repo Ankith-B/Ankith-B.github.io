@@ -31,6 +31,7 @@
     <nav class="main" aria-label="Main">
       <a class="link" href="#/" data-go="mission">Mission</a>
       <a class="link" href="#/" data-go="research">Research</a>
+      <a class="link" href="#/" data-go="contact" id="navContact" hidden>Contact</a>
       <span id="authSlot"></span>
     </nav>
   </div>
@@ -67,7 +68,36 @@
         <div class="tiles" id="tiles"></div>
       </div>
     </section>
+    <section class="contact" id="contact" hidden>
+      <div class="wrap">
+        <div class="sec-head"><h2>Contact our team</h2></div>
+        <div class="c-grid">
+          <p class="c-intro">Send us a message, or tell us which disease you would like us to work on. Messages go to our team only. Please do not include personal health information.</p>
+          <form id="contactForm" novalidate>
+            <div class="seg" role="radiogroup" aria-label="Type of message">
+              <label><input type="radio" name="kind" value="message" checked> General message</label>
+              <label><input type="radio" name="kind" value="disease_request"> Request about a disease</label>
+            </div>
+            <div id="diseaseRow" hidden>
+              <label for="cDisease">Disease</label>
+              <input id="cDisease" maxlength="200" autocomplete="off">
+            </div>
+            <label for="cMsg">Message</label>
+            <textarea id="cMsg" rows="6" maxlength="4000" required></textarea>
+            <div class="two-f">
+              <div><label for="cName">Name <span class="opt">(optional)</span></label><input id="cName" maxlength="120" autocomplete="name"></div>
+              <div><label for="cEmail">Email for a reply <span class="opt">(optional)</span></label><input id="cEmail" type="email" maxlength="200" autocomplete="email"></div>
+            </div>
+            <input id="cTrap" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+            <p class="err" id="cErr" role="alert"></p>
+            <button class="btn solid" type="submit" id="cSend">Send message</button>
+          </form>
+        </div>
+      </div>
+    </section>
   </div>
+
+  <article id="inbox" class="detail" hidden><div class="wrap" id="inboxInner"></div></article>
 
   <article id="detail" class="detail" hidden><div class="wrap" id="detailInner"></div></article>
 </main>
@@ -122,6 +152,7 @@
   </form>
 </dialog>
 
+<script src="config.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
 </body>

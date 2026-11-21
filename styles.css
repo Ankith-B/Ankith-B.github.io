@@ -102,3 +102,32 @@ input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,1
 form .btn{width:100%;margin-top:16px;padding:12px}
 .fine{font-size:.78rem;color:var(--muted);margin:14px 0 0}
 dialog .btn.solid{background:var(--accent)}dialog .btn.solid:hover{background:#2a70e6}
+
+/* contact */
+.contact{padding:30px 0 110px;background:var(--paper)}
+.c-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:56px}
+@media(max-width:860px){.c-grid{grid-template-columns:1fr;gap:20px}}
+.c-intro{color:var(--muted);margin:0;max-width:30em}
+.contact form{padding:0}
+.contact label{display:block;font-size:.86rem;font-weight:600;margin:14px 0 6px}
+.contact .opt{font-weight:400;color:var(--muted)}
+.contact input,.contact textarea,dialog textarea{font:inherit;width:100%;padding:11px 13px;border:1px solid #c9c6bb;border-radius:4px;background:#fff;color:var(--ink)}
+.contact textarea{resize:vertical}
+.contact input:focus,.contact textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,139,255,.2)}
+.seg{display:flex;gap:22px;flex-wrap:wrap}
+.seg label{display:flex;align-items:center;gap:8px;font-weight:500;margin:0;cursor:pointer}
+.seg input{width:auto}
+.two-f{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.two-f{grid-template-columns:1fr}}
+.contact .btn{width:auto;margin-top:6px;padding:12px 28px;background:var(--accent)}
+.contact .btn:hover{background:#2a70e6}
+.ok{background:#e8f3ec;border:1px solid #b5d6c0;color:#1d5a35;padding:16px 18px;border-radius:4px}
+/* inbox */
+.msg{background:#fff;border:1px solid var(--line);border-radius:3px;padding:18px 20px;margin-bottom:14px}
+.msg .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.84rem;color:var(--muted);margin-bottom:8px}
+.msg .tag{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;color:var(--accent)}
+.msg p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg .del{background:none;border:0;color:#b3261e;cursor:pointer;font:inherit;font-size:.84rem;padding:0;margin-top:10px}
+.ib-login{max-width:380px}
+.ib-login label{display:block;font-size:.86rem;font-weight:600;margin:12px 0 5px}
+.ib-login input{font:inherit;width:100%;padding:10px 12px;border:1px solid #c9c6bb;border-radius:4px}
