@@ -21,7 +21,7 @@ header.site .wrap{display:flex;align-items:center;justify-content:space-between;
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
 .brand .word{font-family:var(--sans);font-weight:700;font-size:1.25rem;letter-spacing:-.02em;color:#fff}
 .brand .word i{font-style:normal;color:var(--teal)}
-.mark{display:block;filter:drop-shadow(0 0 6px rgba(59,139,255,.6))}
+.mark{display:block}
 nav.main{display:flex;align-items:center;gap:28px}
 nav.main a.link{color:#b7c6e0;text-decoration:none;font-size:.95rem}
 nav.main a.link:hover{color:#fff}
