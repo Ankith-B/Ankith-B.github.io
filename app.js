@@ -24,21 +24,57 @@
      such as Supabase or Firebase. The UI does not need to change. */
   function b64(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))); }
   function unb64(s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+  /* Pure-JS SHA-256 so hashing works on http as well as https. */
+  var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  function sha256(m) {
+    var l = m.length, n = ((l + 9 + 63) >> 6) << 6, p = new Uint8Array(n), i, j;
+    p.set(m); p[l] = 0x80;
+    var bits = l * 8; p[n - 4] = bits >>> 24; p[n - 3] = bits >>> 16; p[n - 2] = bits >>> 8; p[n - 1] = bits;
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19], w = new Array(64);
+    for (var o = 0; o < n; o += 64) {
+      for (i = 0; i < 16; i++) w[i] = (p[o+4*i] << 24) | (p[o+4*i+1] << 16) | (p[o+4*i+2] << 8) | p[o+4*i+3];
+      for (i = 16; i < 64; i++) {
+        var a0 = w[i-15], a1 = w[i-2];
+        var s0 = ((a0>>>7)|(a0<<25)) ^ ((a0>>>18)|(a0<<14)) ^ (a0>>>3);
+        var s1 = ((a1>>>17)|(a1<<15)) ^ ((a1>>>19)|(a1<<13)) ^ (a1>>>10);
+        w[i] = (w[i-16] + s0 + w[i-7] + s1) | 0;
+      }
+      var v = H.slice();
+      for (i = 0; i < 64; i++) {
+        var e = v[4], a = v[0];
+        var S1 = ((e>>>6)|(e<<26)) ^ ((e>>>11)|(e<<21)) ^ ((e>>>25)|(e<<7));
+        var t1 = (v[7] + S1 + ((e & v[5]) ^ (~e & v[6])) + K[i] + w[i]) | 0;
+        var S0 = ((a>>>2)|(a<<30)) ^ ((a>>>13)|(a<<19)) ^ ((a>>>22)|(a<<10));
+        var t2 = (S0 + ((a & v[1]) ^ (a & v[2]) ^ (v[1] & v[2]))) | 0;
+        v = [(t1 + t2) | 0, v[0], v[1], v[2], (v[3] + t1) | 0, v[4], v[5], v[6]];
+      }
+      for (j = 0; j < 8; j++) H[j] = (H[j] + v[j]) | 0;
+    }
+    var out = new Uint8Array(32);
+    for (j = 0; j < 8; j++) { out[4*j] = H[j] >>> 24; out[4*j+1] = H[j] >>> 16; out[4*j+2] = H[j] >>> 8; out[4*j+3] = H[j]; }
+    return out;
+  }
+  function cat(a, b) { var r = new Uint8Array(a.length + b.length); r.set(a); r.set(b, a.length); return r; }
   function hash(pw, saltB64) {
-    var enc = new TextEncoder();
-    return crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveBits"]).then(function (key) {
-      return crypto.subtle.deriveBits({ name: "PBKDF2", salt: unb64(saltB64), iterations: 150000, hash: "SHA-256" }, key, 256);
-    }).then(b64);
+    var pwb = new TextEncoder().encode(pw), h = sha256(cat(unb64(saltB64), pwb));
+    for (var i = 0; i < 20000; i++) h = sha256(cat(h, pwb));
+    return Promise.resolve(b64(h));
+  }
+  function randomSalt() {
+    var a = new Uint8Array(16);
+    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a);
+    else for (var i = 0; i < 16; i++) a[i] = Math.floor(Math.random() * 256);
+    return b64(a);
   }
   var Auth = {
     users: function () { return load("cad_users", []); },
     current: function () { return load("cad_session", null); },
     signup: function (username, email, pw) {
       var users = Auth.users();
-      var u = username.toLowerCase(), e = email.toLowerCase();
+      var u = username.toLowerCase(), e = (email || "").toLowerCase();
       if (users.some(function (x) { return x.username.toLowerCase() === u; })) return Promise.reject("That username is taken.");
-      if (users.some(function (x) { return x.email === e; })) return Promise.reject("An account with that email already exists.");
-      var salt = b64(crypto.getRandomValues(new Uint8Array(16)));
+      if (e && users.some(function (x) { return x.email === e; })) return Promise.reject("An account with that email already exists.");
+      var salt = randomSalt();
       return hash(pw, salt).then(function (h) {
         users.push({ username: username, email: e, salt: salt, hash: h });
         if (!save("cad_users", users)) throw "Your browser blocked saving. Check privacy settings.";
@@ -48,7 +84,7 @@
     },
     login: function (id, pw) {
       var key = id.trim().toLowerCase();
-      var user = Auth.users().filter(function (x) { return x.username.toLowerCase() === key || x.email === key; })[0];
+      var user = Auth.users().filter(function (x) { return x.username.toLowerCase() === key || (x.email && x.email === key); })[0];
       var bad = "Incorrect email, username or password.";
       if (!user) return Promise.reject(bad);
       return hash(pw, user.salt).then(function (h) {
@@ -59,7 +95,6 @@
     },
     logout: function () { try { localStorage.removeItem("cad_session"); } catch (e) {} }
   };
-  var cryptoOk = !!(window.crypto && crypto.subtle);
 
   function savedKey() { var s = Auth.current(); return s ? "cad_saved_" + s.username.toLowerCase() : null; }
   function savedList() { var k = savedKey(); return k ? load(k, []) : []; }
@@ -116,7 +151,6 @@
     var err = $("#liErr"); err.textContent = "";
     var id = $("#liId").value, pw = $("#liPw").value;
     if (!id.trim() || !pw) { err.textContent = "Enter your email or username and your password."; return; }
-    if (!cryptoOk) { err.textContent = "Accounts need a secure (https) connection."; return; }
     Auth.login(id, pw).then(done, function (m) { err.textContent = String(m); });
   });
   $("#signupForm").addEventListener("submit", function (e) {
@@ -124,10 +158,9 @@
     var err = $("#suErr"); err.textContent = "";
     var u = $("#suUser").value.trim(), em = $("#suEmail").value.trim(), p = $("#suPw").value, p2 = $("#suPw2").value;
     if (!/^[A-Za-z0-9_.-]{3,20}$/.test(u)) { err.textContent = "Username must be 3 to 20 letters, numbers, dots, dashes or underscores."; return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { err.textContent = "Enter a valid email address."; return; }
+    if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { err.textContent = "Enter a valid email address."; return; }
     if (p.length < 8) { err.textContent = "Password must be at least 8 characters."; return; }
     if (p !== p2) { err.textContent = "Passwords don't match."; return; }
-    if (!cryptoOk) { err.textContent = "Accounts need a secure (https) connection."; return; }
     Auth.signup(u, em, p).then(done, function (m) { err.textContent = String(m); });
   });
 

@@ -109,8 +109,8 @@
     <label for="suUser">Username</label>
     <input id="suUser" autocomplete="username" required>
     <div class="hint">3 to 20 letters, numbers, dots, dashes or underscores.</div>
-    <label for="suEmail">Email</label>
-    <input id="suEmail" type="email" autocomplete="email" required>
+    <label for="suEmail">Email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+    <input id="suEmail" type="email" autocomplete="email">
     <label for="suPw">Password</label>
     <input id="suPw" type="password" autocomplete="new-password" required>
     <div class="hint">At least 8 characters.</div>
@@ -118,7 +118,7 @@
     <input id="suPw2" type="password" autocomplete="new-password" required>
     <p class="err" id="suErr" role="alert"></p>
     <button class="btn solid" type="submit">Create account</button>
-    <p class="fine">You can log in later with either your email or your username.</p>
+    <p class="fine">Log in with your username, or with your email if you add one.</p>
   </form>
 </dialog>
 
