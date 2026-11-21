@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cure A Disease | Open computational research on rare diseases</title>
+<meta name="description" content="Open, computational research on rare and neglected diseases. We generate drug-repurposing hypotheses from public data and publish methods, code, and results. Predictions only; not medical advice.">
+<meta property="og:title" content="Cure A Disease">
+<meta property="og:description" content="Open computational research on rare and neglected diseases.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --ink:#10222b; --muted:#4b606b; --line:#d6e0e4; --bg:#f6f9fa; --card:#ffffff;
+    --teal:#0e6b73; --teal-dark:#094a50; --accent:#d9822b; --warn-bg:#fff6e8; --warn-line:#f0cf9c;
+    --max:1040px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#e8f1f4; --muted:#a3b7bf; --line:#254049; --bg:#0b171c; --card:#11232a;
+           --teal:#52c2cb; --teal-dark:#8fdde3; --accent:#f0a65a; --warn-bg:#2a2112; --warn-line:#5a4524; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:0 0 .5em}
+  a{color:var(--teal)} a:hover{color:var(--teal-dark)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  .skip{position:absolute;left:-999px} .skip:focus{left:12px;top:12px;background:var(--card);padding:8px 12px;z-index:10}
+
+  header.site{border-bottom:1px solid var(--line);background:var(--card)}
+  header.site .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-family:Georgia,serif;font-weight:700;font-size:1.2rem;color:var(--ink);text-decoration:none}
+  .brand span{color:var(--accent)}
+  nav a{margin-left:22px;text-decoration:none;color:var(--muted);font-size:.95rem}
+  nav a:hover{color:var(--teal)}
+
+  .hero{padding:88px 0 72px}
+  .eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:clamp(2.2rem,5.5vw,3.7rem);max-width:17ch}
+  .hero p.lead{font-size:1.2rem;color:var(--muted);max-width:60ch;margin:18px 0 28px}
+  .btn{display:inline-block;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;margin-right:10px}
+  .btn.primary{background:var(--teal);color:#fff} .btn.primary:hover{background:var(--teal-dark);color:#fff}
+  .btn.ghost{border:1.5px solid var(--line);color:var(--ink)} .btn.ghost:hover{border-color:var(--teal);color:var(--teal)}
+
+  .notice{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:16px 20px;font-size:.95rem}
+  .notice strong{color:var(--accent)}
+
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  section h2{font-size:clamp(1.6rem,3vw,2.1rem)}
+  .sub{color:var(--muted);max-width:64ch;margin-bottom:34px}
+
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;counter-reset:s;padding:0;list-style:none;margin:0}
+  .steps li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;counter-increment:s}
+  .steps li::before{content:counter(s);display:inline-flex;width:30px;height:30px;border-radius:50%;
+       background:var(--teal);color:#fff;align-items:center;justify-content:center;font-weight:700;margin-bottom:12px}
+  .steps h3{font-size:1.1rem}
+  .steps p{margin:0;color:var(--muted);font-size:.96rem}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px}
+  .tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+       padding:3px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted);margin-bottom:10px}
+  .card h3{font-size:1.1rem} .card p{margin:0;color:var(--muted);font-size:.96rem}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+  @media(max-width:760px){.two{grid-template-columns:1fr} nav a:not(:last-child){display:none}}
+  ul.checks{padding-left:0;list-style:none;margin:0}
+  ul.checks li{padding-left:28px;position:relative;margin-bottom:10px}
+  ul.checks li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:700}
+  ul.limits li::before{content:"–";color:var(--accent)}
+
+  footer{border-top:1px solid var(--line);padding:36px 0;color:var(--muted);font-size:.9rem;background:var(--card)}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top">Cure<span>A</span>Disease</a>
+    <nav aria-label="Main">
+      <a href="#approach">Approach</a>
+      <a href="#research">Research</a>
+      <a href="#transparency">Transparency</a>
+      <a href="#involved">Get involved</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap hero" id="top">
+    <div class="eyebrow">Open computational research</div>
+    <h1>Finding leads for diseases that few people study.</h1>
+    <p class="lead">Thousands of rare diseases have no approved treatment. We use public biomedical data, AI, and simulation to generate
+      <em>testable hypotheses</em> about existing drugs, then publish our methods, code, and results openly so that clinicians and labs can follow up.</p>
+    <a class="btn primary" href="#research">See the research</a>
+    <a class="btn ghost" href="#transparency">How we stay honest</a>
+    <p></p>
+    <div class="notice" role="note">
+      <strong>Important:</strong> Everything on this site is a computational prediction. None of it has been tested in a laboratory or
+      by a regulator, none of it is a treatment or a cure, and none of it is medical advice. Please talk to a qualified clinician about any health decision.
+    </div>
+  </div>
+
+  <section id="approach">
+    <div class="wrap">
+      <h2>Our approach</h2>
+      <p class="sub">A repeatable pipeline from public data to a published, checkable hypothesis.</p>
+      <ol class="steps">
+        <li><h3>Choose a disease</h3><p>We pick conditions that are rare, neglected, and have open data and an active patient community.</p></li>
+        <li><h3>Mine public data</h3><p>We combine open drug, gene, and disease databases to score which existing compounds might be relevant.</p></li>
+        <li><h3>Stress-test</h3><p>We check whether our method re-discovers known drug-disease pairs before trusting any new prediction.</p></li>
+        <li><h3>Publish openly</h3><p>We release ranked candidates, code, and limitations as preprints and, where possible, in journals.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="research">
+    <div class="wrap">
+      <h2>Research</h2>
+      <p class="sub">Results will be listed here as they are completed, each with its methods, code, and limitations.</p>
+      <div class="cards">
+        <article class="card"><span class="tag">In progress</span><h3>Pilot study: [disease name]</h3>
+          <p>[One or two sentences on what is being analyzed and which data sources are used.]</p></article>
+        <article class="card"><span class="tag">Planned</span><h3>Method validation</h3>
+          <p>Testing how well our scoring approach recovers known drug-disease relationships.</p></article>
+        <article class="card"><span class="tag">Planned</span><h3>Open datasets and code</h3>
+          <p>A public repository so anyone can reproduce and criticize the analyses.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="transparency">
+    <div class="wrap two">
+      <div>
+        <h2>What we do</h2>
+        <ul class="checks">
+          <li>Publish methods, code, and data sources.</li>
+          <li>Report negative and uncertain results.</li>
+          <li>State every limitation next to every result.</li>
+          <li>Hand promising leads to people who can test them.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>What we don't do</h2>
+        <ul class="checks limits">
+          <li>Claim a cure or recommend a treatment.</li>
+          <li>Run clinical trials or give medical advice.</li>
+          <li>Treat a prediction as proof it works.</li>
+          <li>Ask patients for money or personal health data.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="involved">
+    <div class="wrap">
+      <h2>Get involved</h2>
+      <p class="sub">We are looking for clinicians, wet-lab researchers, and patient foundations who could review or test a computational lead, and for experts willing to advise.</p>
+      <p><a class="btn primary" href="mailto:[your-email@example.com]">Contact us</a>
+         <a class="btn ghost" href="https://github.com/Ankith-B">Code on GitHub</a></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Cure A Disease. Computational research only; not medical advice.</div>
+    <div><a href="https://github.com/Ankith-B">GitHub</a></div>
+  </div>
+</footer>
+
+<!-- Optional analytics (Simple Analytics): paste the snippet from your dashboard here -->
+</body>
+</html>
