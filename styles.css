@@ -40,8 +40,8 @@ nav.main a.link:hover{color:#fff}
 .hero .lead{font-size:1.28rem;color:#b7c6e0;max-width:30em;margin:0 0 34px;line-height:1.55}
 .hero .btn{padding:13px 26px;font-size:1rem}
 .art{display:flex;justify-content:center;padding:36px 0}
-.heart{width:min(360px,80%);height:auto;display:block;animation:breathe 4.5s ease-in-out infinite;transform-origin:50% 55%}
-@keyframes breathe{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.018);filter:brightness(1.16)}}
+.heart{width:min(420px,86%);height:auto;display:block;filter:drop-shadow(0 0 18px rgba(59,139,255,.55));animation:breathe 4.5s ease-in-out infinite;transform-origin:50% 55%}
+@keyframes breathe{0%,100%{transform:scale(1);filter:drop-shadow(0 0 16px rgba(59,139,255,.5))}50%{transform:scale(1.018);filter:drop-shadow(0 0 26px rgba(79,163,255,.8))}}
 @media (prefers-reduced-motion: reduce){.heart{animation:none}}
 @media(max-width:820px){.hero .grid{grid-template-columns:1fr;min-height:0;padding:48px 0 8px;gap:0}.art{order:-1;padding:0 0 10px}.heart{width:200px}}
 
