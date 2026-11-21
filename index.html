@@ -20,41 +20,71 @@
 <!-- Shared heart artwork: navy-to-teal, glossy, with vessels -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="gBody" x1="0.1" y1="0" x2="0.9" y2="1">
-      <stop offset="0" stop-color="#101d47"/>
-      <stop offset="0.3" stop-color="#1f4a9a"/>
-      <stop offset="0.68" stop-color="#3a9fb0"/>
-      <stop offset="1" stop-color="#6fd0d2"/>
+    <linearGradient id="gBody" x1="0.05" y1="0" x2="0.95" y2="1">
+      <stop offset="0" stop-color="#16295c"/>
+      <stop offset="0.35" stop-color="#245aa6"/>
+      <stop offset="0.7" stop-color="#3a9db0"/>
+      <stop offset="1" stop-color="#63c9cd"/>
     </linearGradient>
-    <linearGradient id="gVessel" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2f66b0"/>
-      <stop offset="1" stop-color="#5cc3cb"/>
+    <linearGradient id="gAtria" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a63b3"/>
+      <stop offset="1" stop-color="#4cb4bf"/>
+    </linearGradient>
+    <linearGradient id="gAorta" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c3f86"/>
+      <stop offset="1" stop-color="#2f86b0"/>
+    </linearGradient>
+    <linearGradient id="gTube" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#58b9c4"/>
+      <stop offset="0.5" stop-color="#8fdbe0"/>
+      <stop offset="1" stop-color="#4aa8b6"/>
     </linearGradient>
     <radialGradient id="gGloss" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#fff" stop-opacity=".7"/>
+      <stop offset="0" stop-color="#fff" stop-opacity=".65"/>
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="gShade" cx="0.7" cy="0.95" r="0.6">
-      <stop offset="0" stop-color="#06102e" stop-opacity=".5"/>
-      <stop offset="1" stop-color="#06102e" stop-opacity="0"/>
+    <radialGradient id="gShade" cx="0.3" cy="0.1" r="1">
+      <stop offset="0.5" stop-color="#050d2a" stop-opacity="0"/>
+      <stop offset="1" stop-color="#050d2a" stop-opacity=".6"/>
     </radialGradient>
-    <symbol id="heart" viewBox="-4 -4 108 106">
-      <!-- great vessels -->
-      <path d="M53 32C51 13 64 6 76 14" fill="none" stroke="url(#gVessel)" stroke-width="10" stroke-linecap="round"/>
-      <path d="M41 30C38 17 33 11 26 13" fill="none" stroke="url(#gVessel)" stroke-width="7.5" stroke-linecap="round"/>
-      <path d="M63 26C66 18 67 12 66 6" fill="none" stroke="url(#gVessel)" stroke-width="6.5" stroke-linecap="round"/>
-      <path d="M53 30C52 14 63 8 73 14" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2.4" stroke-linecap="round"/>
-      <!-- body -->
-      <path d="M50 93C30 77 9 59 9 37 9 23 19 13 32 13c8 0 14 4 18 10 4-6 10-10 18-10 13 0 23 10 23 24 0 22-21 40-41 56z" fill="url(#gBody)"/>
-      <path d="M50 93C30 77 9 59 9 37 9 23 19 13 32 13c8 0 14 4 18 10 4-6 10-10 18-10 13 0 23 10 23 24 0 22-21 40-41 56z" fill="url(#gShade)"/>
-      <!-- grooves and coronary vessels -->
-      <path d="M48 24C44 46 50 68 52 90" fill="none" stroke="#06102e" stroke-opacity=".3" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M44 28C36 40 34 56 40 74" fill="none" stroke="#aee4ea" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M36 44C28 44 22 50 20 58" fill="none" stroke="#aee4ea" stroke-opacity=".4" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M57 30C66 40 70 54 62 72" fill="none" stroke="#d6f4f6" stroke-opacity=".5" stroke-width="1.5" stroke-linecap="round"/>
-      <!-- gloss -->
-      <ellipse cx="28" cy="31" rx="13" ry="7" transform="rotate(-38 28 31)" fill="url(#gGloss)"/>
-      <ellipse cx="72" cy="30" rx="6" ry="3.2" transform="rotate(35 72 30)" fill="url(#gGloss)" opacity=".55"/>
+    <symbol id="heart" viewBox="0 0 640 750">
+      <g stroke="#0c1a47" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M280 125C268 75 272 35 296 24C320 16 336 42 346 110Z" fill="url(#gAorta)"/>
+        <path d="M372 112C366 60 376 18 402 14C428 12 438 52 438 120Z" fill="url(#gAorta)"/>
+        <path d="M440 130C448 90 462 55 484 46C506 42 508 66 494 98C486 118 480 136 476 158Z" fill="url(#gAorta)"/>
+        <path d="M232 240C232 160 270 108 345 108C430 108 488 150 496 250L506 268L420 278L300 296Z" fill="url(#gAorta)"/>
+        <rect x="84" y="158" width="100" height="40" rx="20" fill="url(#gTube)"/>
+        <path d="M512 256C548 240 592 236 606 256C614 276 592 288 558 292Z" fill="url(#gTube)"/>
+        <path d="M540 322C574 310 610 314 613 336C614 352 590 356 552 352Z" fill="url(#gTube)"/>
+        <path d="M152 88L236 76L242 252L164 258Z" fill="url(#gTube)"/>
+        <ellipse cx="194" cy="82" rx="42" ry="15" fill="#2a6f86" transform="rotate(-6 194 82)"/>
+        <path d="M122 486C96 410 108 335 160 285C205 248 255 252 282 292L312 302C345 326 405 330 452 364C520 402 562 445 562 525C562 625 470 722 392 742C330 748 252 704 200 642C152 590 134 538 122 486Z" fill="url(#gBody)"/>
+        <path d="M122 486C96 410 108 335 160 285C205 248 255 252 282 292L312 302C345 326 405 330 452 364C520 402 562 445 562 525C562 625 470 722 392 742C330 748 252 704 200 642C152 590 134 538 122 486Z" fill="url(#gShade)" stroke="none"/>
+        <path d="M106 410C92 345 118 296 168 266C214 246 256 264 282 294L298 298C268 332 232 362 204 402C176 432 146 462 126 488C112 466 108 440 106 410Z" fill="url(#gAtria)"/>
+        <path d="M404 308C426 276 470 262 504 280C548 304 566 366 556 410C508 380 452 352 404 326Z" fill="url(#gAtria)"/>
+        <path d="M316 304C312 244 334 206 372 196C440 186 520 168 566 156C592 150 598 206 570 216C520 228 472 246 442 264C420 278 410 302 400 326Z" fill="url(#gTube)"/>
+        <ellipse cx="372" cy="190" rx="20" ry="10" fill="#2a6f86" stroke-width="5"/>
+        <ellipse cx="578" cy="184" rx="13" ry="30" fill="#2a6f86" stroke-width="5" transform="rotate(8 578 184)"/>
+      </g>
+      <g fill="none" stroke="#0c1a47" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M126 488C176 432 236 402 288 296"/>
+        <path d="M454 366C458 450 420 540 342 646"/>
+        <path d="M214 398C208 440 206 480 210 508"/>
+        <path d="M208 430C226 442 242 452 256 456"/>
+        <path d="M448 440C470 462 490 490 498 530"/>
+        <path d="M446 448C410 470 378 490 352 512"/>
+        <path d="M410 524C418 546 428 570 432 600"/>
+        <path d="M388 494C386 514 382 534 380 548"/>
+        <path d="M388 580C370 600 350 618 330 628"/>
+      </g>
+      <g fill="none" stroke="#bff0f2" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round">
+        <path d="M454 366C458 450 420 540 342 646" transform="translate(-6 -4)"/>
+        <path d="M126 488C176 432 236 402 288 296" transform="translate(5 -6)"/>
+      </g>
+      <ellipse cx="205" cy="340" rx="52" ry="24" transform="rotate(-42 205 340)" fill="url(#gGloss)"/>
+      <ellipse cx="300" cy="500" rx="70" ry="120" transform="rotate(28 300 500)" fill="url(#gGloss)" opacity=".28"/>
+      <ellipse cx="520" cy="300" rx="26" ry="12" transform="rotate(-30 520 300)" fill="url(#gGloss)" opacity=".5"/>
+      <path d="M230 96C260 78 300 76 330 84" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="5" stroke-linecap="round"/>
     </symbol>
   </defs>
 </svg>
@@ -71,7 +101,7 @@
 <header class="site">
   <div class="wrap">
     <a class="brand" href="#/" aria-label="Cure A Disease, home">
-      <span class="heart-wrap"><svg class="heart" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true"><use href="#heart"/></svg></span>
+      <span class="heart-wrap"><svg class="heart" width="36" height="42" viewBox="0 0 640 750" aria-hidden="true"><use href="#heart"/></svg></span>
       <span class="word">cure<i>a</i>disease</span>
     </a>
     <nav class="main" aria-label="Main">
@@ -88,7 +118,7 @@
     <div class="wrap hero">
       <div class="grid">
         <div class="heart-wrap" style="justify-self:center">
-          <svg class="heart" width="190" height="190" viewBox="0 0 100 100" role="img" aria-label="Cure A Disease logo: a blue and teal heart"><use href="#heart"/></svg>
+          <svg class="heart" width="170" height="199" viewBox="0 0 640 750" role="img" aria-label="Cure A Disease logo: a blue and teal heart"><use href="#heart"/></svg>
         </div>
         <div>
           <div class="badge">Nonprofit organization</div>
