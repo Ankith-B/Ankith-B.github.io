@@ -16,7 +16,7 @@
   /* ---------- one-time reset ----------
      Bump RESET_VERSION to wipe all locally stored accounts, sessions and saved lists
      the next time each visitor opens the site. */
-  var RESET_VERSION = "2026-11-21-reset";
+  var RESET_VERSION = "2026-11-22-reset";
   try {
     if (localStorage.getItem("cad_reset") !== RESET_VERSION) {
       Object.keys(localStorage).forEach(function (k) { if (k.indexOf("cad_") === 0) localStorage.removeItem(k); });
@@ -272,7 +272,7 @@
   /* ---------- header counters (visits, accounts) via Supabase RPC ---------- */
   function rpc(fn, args) { return sb("/rest/v1/rpc/" + fn, { method: "POST", body: JSON.stringify(args || {}) }); }
   function fmt(n) { return Number(n).toLocaleString(); }
-  var AB = "https://abacus.jasoncameron.dev/", NS = "cureadisease.me/";
+  var AB = "https://abacus.jasoncameron.dev/", NS = "cureadisease.me.r2/";
   function ab(op, key) { return fetch(AB + op + "/" + NS + key).then(function (r) { return r.json(); }).then(function (j) { return j && typeof j.value === "number" ? j.value : 0; }, function () { return 0; }); }
   if ($("#stats")) {
     $("#stats").hidden = false;
