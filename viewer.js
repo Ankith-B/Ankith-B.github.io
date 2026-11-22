@@ -99,7 +99,7 @@
       });
       var c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
       s.group.children.forEach(function (m) { m.position.sub(c); });
-      s.setBase(Math.max(sz.y, sz.x) * 2.6); s.state.rx = 0.1; s.start();
+      s.setBase(Math.max(sz.y, sz.x) * 1.8); s.state.rx = 0.1; s.start();
       var ctl = document.getElementById("v3ctl");
       [["Liver", ["Liver"], "#2f6ff0"], ["Portal vein", ["Portal vein"], "#9fd0ff"], ["Bile ducts", ["Bile duct"], "#7fe6c8"], ["Gallbladder", ["Gallbladder"], "#4fd1cf"]].forEach(function (it) {
         var l = document.createElement("label"), cb = document.createElement("input"), sw = document.createElement("i");
