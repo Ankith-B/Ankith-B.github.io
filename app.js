@@ -176,7 +176,7 @@
     if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { err.textContent = "Enter a valid email address."; return; }
     if (p.length < 8) { err.textContent = "Password must be at least 8 characters."; return; }
     if (p !== p2) { err.textContent = "Passwords don't match."; return; }
-    Auth.signup(u, em, p).then(done, function (m) { err.textContent = String(m); });
+    Auth.signup(u, em, p).then(function (n) { if (sbOn) rpc("bump_stat", { stat: "accounts" }).then(function () { return rpc("get_stats"); }).then(function (r) { var x = $("#nAccounts"); if (x) x.textContent = fmt(r.accounts); }, function () {}); return n; }).then(done, function (m) { err.textContent = String(m); });
   });
 
   /* ---------- research grid ---------- */
@@ -189,10 +189,7 @@
     var saved = savedList();
     D.forEach(function (d) {
       var t = el("button", { class: "tile", type: "button", "aria-label": d.name + ", open full breakdown" }, [
-        el("span", { class: "cat", text: d.category || "" }),
-        el("h3", { text: d.name }),
-        el("p", { text: d.blurb || "" }),
-        el("span", { class: "more" }, [el("span", { text: "Read more →" }), el("span", { text: saved.indexOf(d.id) >= 0 ? "★ Saved" : "" })])
+        el("h3", { text: d.name })
       ]);
       t.onclick = function () { if (d.href) location.href = d.href; else location.hash = "#/d/" + d.id; };
       box.appendChild(t);
@@ -269,6 +266,18 @@
         btn.disabled = false; btn.textContent = "Send message";
       });
     });
+  }
+
+
+  /* ---------- header counters (visits, accounts) via Supabase RPC ---------- */
+  function rpc(fn, args) { return sb("/rest/v1/rpc/" + fn, { method: "POST", body: JSON.stringify(args || {}) }); }
+  function fmt(n) { return Number(n).toLocaleString(); }
+  if (sbOn && $("#stats")) {
+    var seen = false; try { seen = sessionStorage.getItem("cad_seen") === "1"; } catch (e) {}
+    var p = seen ? rpc("get_stats") : rpc("bump_stat", { stat: "visits" }).then(function () { try { sessionStorage.setItem("cad_seen", "1"); } catch (e) {} return rpc("get_stats"); });
+    p.then(function (r) {
+      $("#nVisits").textContent = fmt(r.visits); $("#nAccounts").textContent = fmt(r.accounts); $("#stats").hidden = false;
+    }, function () {});
   }
 
   function owner() { try { return JSON.parse(sessionStorage.getItem("cad_owner") || "null"); } catch (e) { return null; } }

@@ -1,8 +1,8 @@
 :root{
   --night:#04080f; --blue:#3b8bff; --ice:#9fd0ff; --teal:#4fd1cf;
   --paper:#f6f5f1; --white:#fff; --ink:#0f1a2c; --muted:#5b667a; --line:#dcdad2; --accent:#1c5fd1;
-  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
-  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --max:1120px;
 }
 *{box-sizing:border-box}
@@ -63,7 +63,8 @@ nav.main a.link:hover{color:#fff}
 .tile:hover{border-color:var(--accent);box-shadow:0 12px 28px -18px rgba(15,26,44,.5)}
 .tile:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .tile .cat{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
-.tile h3{font-size:1.45rem;margin:8px 0}
+.tile{justify-content:flex-end}
+.tile h3{font-size:2rem;margin:0;letter-spacing:-.01em}
 .tile p{margin:0;color:var(--muted);font-size:.96rem;flex:1}
 .tile .more{margin-top:16px;font-weight:600;font-size:.9rem;color:var(--accent);display:flex;justify-content:space-between}
 
@@ -131,3 +132,8 @@ dialog .btn.solid{background:var(--accent)}dialog .btn.solid:hover{background:#2
 .ib-login{max-width:380px}
 .ib-login label{display:block;font-size:.86rem;font-weight:600;margin:12px 0 5px}
 .ib-login input{font:inherit;width:100%;padding:10px 12px;border:1px solid #c9c6bb;border-radius:4px}
+
+/* header stats (unlabeled) */
+.stats{display:flex;align-items:center;gap:16px;color:#b7c6e0;font-size:.9rem;font-variant-numeric:tabular-nums}
+.stats span{display:inline-flex;align-items:center;gap:6px}
+.stats svg{opacity:.85}

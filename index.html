@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20374%20390%22%3E%3Cg%20fill=%22none%22%20stroke-width=%2216%22%20stroke-linecap=%22round%22%3E%3Cpath%20d=%22M90%2074C96%2054%20128%2060%20142%2088C152%20108%20144%20132%20124%20152%22%20stroke=%22%232a62e0%22/%3E%3Cpath%20d=%22M160%2040C166%2064%20172%2084%20160%20104%22%20stroke=%22%234aa3ff%22/%3E%3Cpath%20d=%22M214%2040C206%2062%20196%2082%20190%20102%22%20stroke=%22%23a9defc%22/%3E%3Cpath%20d=%22M266%2062C250%2080%20240%2096%20224%20112%22%20stroke=%22%237cc6ff%22/%3E%3Cpath%20d=%22M150%20172C168%20142%20198%20122%20238%20119C268%20116%20298%20118%20312%20123%22%20stroke=%22%238fd3ff%22/%3E%3Cpath%20d=%22M200%20208C236%20178%20278%20166%20322%20163%22%20stroke=%22%235aaeff%22/%3E%3Cpath%20d=%22M104%20136C78%20150%2066%20190%2080%20236C88%20266%20108%20292%20130%20306%22%20stroke=%22%236cbcff%22/%3E%3Cpath%20d=%22M156%20190C112%20202%2098%20242%20120%20286C145%20332%20185%20352%20216%20356C252%20356%20276%20320%20288%20268C296%20236%20296%20212%20286%20188%22%20stroke=%22%232f6ff0%22/%3E%3Cpath%20d=%22M226%20214C224%20250%20214%20284%20198%20332M226%20236C206%20256%20190%20280%20180%20306M232%20222C256%20238%20266%20254%20268%20270M224%20272C236%20290%20240%20308%20238%20322%22%20stroke=%22%237ec8ff%22/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,6 +32,10 @@
       <a class="link" href="#/" data-go="mission">Mission</a>
       <a class="link" href="#/" data-go="research">Research</a>
       <a class="link" href="#/" data-go="contact" id="navContact" hidden>Contact</a>
+      <span class="stats" id="stats" hidden>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><b id="nVisits" aria-label="Page visits">0</b></span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><b id="nAccounts" aria-label="Accounts">0</b></span>
+      </span>
       <span id="authSlot"></span>
     </nav>
   </div>

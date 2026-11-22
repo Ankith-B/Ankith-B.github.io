@@ -28,3 +28,23 @@ create policy "owner can delete" on public.messages
 
 grant insert on public.messages to anon, authenticated;
 grant select, delete on public.messages to authenticated;
+
+-- Header counters: page visits and accounts created. Nobody can read or write the table directly;
+-- the site may only call these two functions.
+create table if not exists public.stats (name text primary key, value bigint not null default 0);
+insert into public.stats (name) values ('visits'), ('accounts') on conflict do nothing;
+alter table public.stats enable row level security;
+
+create or replace function public.bump_stat(stat text) returns void
+language sql security definer set search_path = public as $$
+  update public.stats set value = value + 1 where name = stat and stat in ('visits', 'accounts');
+$$;
+
+create or replace function public.get_stats() returns json
+language sql security definer set search_path = public as $$
+  select json_build_object(
+    'visits', (select value from public.stats where name = 'visits'),
+    'accounts', (select value from public.stats where name = 'accounts'));
+$$;
+
+grant execute on function public.bump_stat(text), public.get_stats() to anon, authenticated;
