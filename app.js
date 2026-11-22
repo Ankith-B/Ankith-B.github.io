@@ -176,7 +176,7 @@
     if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { err.textContent = "Enter a valid email address."; return; }
     if (p.length < 8) { err.textContent = "Password must be at least 8 characters."; return; }
     if (p !== p2) { err.textContent = "Passwords don't match."; return; }
-    Auth.signup(u, em, p).then(function (n) { if (!sbOn) ab("hit", "accounts").then(function (v) { var x = $("#nAccounts"); if (x) x.textContent = fmt(v); }); if (sbOn) rpc("bump_stat", { stat: "accounts" }).then(function () { return rpc("get_stats"); }).then(function (r) { var x = $("#nAccounts"); if (x) x.textContent = fmt(r.accounts); }, function () {}); return n; }).then(done, function (m) { err.textContent = String(m); });
+    Auth.signup(u, em, p).then(function (n) { if (!sbOn) ab("hit", "accounts").then(function (v) { show("#nAccounts", "accounts", v); }, function () {}); if (sbOn) rpc("bump_stat", { stat: "accounts" }).then(function () { return rpc("get_stats"); }).then(function (r) { var x = $("#nAccounts"); if (x) x.textContent = fmt(r.accounts); }, function () {}); return n; }).then(done, function (m) { err.textContent = String(m); });
   });
 
   /* ---------- research grid ---------- */
@@ -272,14 +272,33 @@
   /* ---------- header counters (visits, accounts) via Supabase RPC ---------- */
   function rpc(fn, args) { return sb("/rest/v1/rpc/" + fn, { method: "POST", body: JSON.stringify(args || {}) }); }
   function fmt(n) { return Number(n).toLocaleString(); }
-  var AB = "https://abacus.jasoncameron.dev/", NS = "cureadisease.me.r2/";
-  function ab(op, key) { return fetch(AB + op + "/" + NS + key).then(function (r) { return r.json(); }).then(function (j) { return j && typeof j.value === "number" ? j.value : 0; }, function () { return 0; }); }
+  var AB = "https://abacus.jasoncameron.dev/", NS = "cureadisease.me.r3/";
+  function cached(k) { try { var v = localStorage.getItem("cad_n_" + k); return v === null ? null : Number(v); } catch (e) { return null; } }
+  function keep(k, v) { try { localStorage.setItem("cad_n_" + k, String(v)); } catch (e) {} }
+  function abOnce(op, key) {
+    return fetch(AB + op + "/" + NS + key, { cache: "no-store" }).then(function (r) {
+      if (r.status === 404 && op === "get") return 0;
+      if (!r.ok) throw new Error("bad");
+      return r.json();
+    }).then(function (j) { if (typeof j === "number") return j; if (j && typeof j.value === "number") return j.value; throw new Error("bad"); });
+  }
+  function ab(op, key) {
+    return abOnce(op, key).catch(function () { return new Promise(function (res) { setTimeout(res, 1200); }).then(function () { return abOnce(op, key); }); });
+  }
+  function show(id, k, v) { var el = $(id); if (!el) return; if (v === null || v === undefined) return; if (k) { var c = cached(k); if (c !== null && v < c) v = c; keep(k, v); } el.textContent = fmt(v); }
   if ($("#stats")) {
+    $("#nVisits").textContent = ""; $("#nAccounts").textContent = "";
+    var c1 = cached("visits"), c2 = cached("accounts");
+    if (c1 !== null) $("#nVisits").textContent = fmt(c1);
+    if (c2 !== null) $("#nAccounts").textContent = fmt(c2);
     $("#stats").hidden = false;
-    var p = sbOn
-      ? rpc("bump_stat", { stat: "visits" }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
-      : ab("hit", "visits").then(function (v) { return ab("get", "accounts").then(function (acc) { return { visits: v, accounts: acc }; }); });
-    p.then(function (r) { $("#nVisits").textContent = fmt(r.visits); $("#nAccounts").textContent = fmt(r.accounts); }, function () {});
+    if (sbOn) {
+      rpc("bump_stat", { stat: "visits" }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
+        .then(function (r) { show("#nVisits", "visits", r.visits); show("#nAccounts", "accounts", r.accounts); }, function () {});
+    } else {
+      ab("hit", "visits").then(function (v) { show("#nVisits", "visits", v); }, function () {});
+      ab("get", "accounts").then(function (v) { show("#nAccounts", "accounts", v); }, function () {});
+    }
   }
 
   function owner() { try { return JSON.parse(sessionStorage.getItem("cad_owner") || "null"); } catch (e) { return null; } }
