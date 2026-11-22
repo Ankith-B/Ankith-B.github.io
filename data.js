@@ -4,7 +4,8 @@ window.DISEASES = [
   {
     id: "cystinuria",
     name: "Cystinuria",
-    category: "Cure \u00b7 Nephrology",
+    category: "Treatment \u00b7 Nephrology",
+    label: "Treatment",
     blurb: "A model of kidney-stone formation predicts that 92% of crystal risk falls in an eight-hour night window, and that dosing time may matter more than drug potency.",
     href: "paper.html"
   },
@@ -12,6 +13,7 @@ window.DISEASES = [
     id: "wilson-disease",
     name: "Wilson disease",
     category: "Cure \u00b7 Hepatology",
+    label: "Cure",
     blurb: "A cure design target for Wilson disease: how much of the liver a gene-editing cure must correct.",
     href: "wilson.html"
   }

@@ -206,8 +206,8 @@
     }
     var saved = savedList();
     D.forEach(function (d) {
-      var t = el("button", { class: "tile", type: "button", "aria-label": d.name + " cure, open full breakdown" }, [
-        el("div", { class: "cat", text: "Cure" }), el("h3", { text: d.name })
+      var t = el("button", { class: "tile", type: "button", "aria-label": d.name + ", " + (d.label || "cure").toLowerCase() + ", open full breakdown" }, [
+        el("div", { class: "cat", text: d.label || "Cure" }), el("h3", { text: d.name })
       ]);
       t.onclick = function () { if (d.href) location.href = d.href; else location.hash = "#/d/" + d.id; };
       box.appendChild(t);
