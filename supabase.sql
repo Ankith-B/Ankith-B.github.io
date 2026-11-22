@@ -29,6 +29,18 @@ create policy "owner can delete" on public.messages
 grant insert on public.messages to anon, authenticated;
 grant select, delete on public.messages to authenticated;
 
+-- Accounts that work on every device. The table is locked; only these functions can touch it.
+create table if not exists public.accounts (
+  username text primary key check (username ~ '^[A-Za-z0-9_.-]{3,20}$'),
+  email text unique,
+  salt text not null,
+  pw_hash text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.accounts enable row level security;
+create unique index if not exists accounts_username_ci on public.accounts (lower(username));
+
+
 -- Header counters: page visits and accounts created. Nobody can read or write the table directly;
 -- the site may only call these two functions.
 create table if not exists public.stats (name text primary key, value bigint not null default 0);
@@ -44,20 +56,10 @@ create or replace function public.get_stats() returns json
 language sql security definer set search_path = public as $$
   select json_build_object(
     'visits', (select value from public.stats where name = 'visits'),
-    'accounts', (select value from public.stats where name = 'accounts'));
+    'accounts', (select count(*) from public.accounts));
 $$;
 
 grant execute on function public.bump_stat(text), public.get_stats() to anon, authenticated;
-
--- Accounts that work on every device. The table is locked; only these functions can touch it.
-create table if not exists public.accounts (
-  username text primary key check (username ~ '^[A-Za-z0-9_.-]{3,20}$'),
-  email text unique,
-  salt text not null,
-  pw_hash text not null
-);
-alter table public.accounts enable row level security;
-create unique index if not exists accounts_username_ci on public.accounts (lower(username));
 
 create or replace function public.acct_signup(uname text, mail text, salt text, pw_hash text) returns text
 language plpgsql security definer set search_path = public as $$
@@ -83,3 +85,16 @@ language sql security definer set search_path = public as $$
 $$;
 
 grant execute on function public.acct_signup(text, text, text, text), public.acct_salt(text), public.acct_login(text, text) to anon, authenticated;
+
+-- Owner dashboard: all accounts and site numbers. Only the Supabase user whose email is OWNER_EMAIL_HERE may call it.
+create or replace function public.admin_overview() returns json
+language plpgsql security definer set search_path = public as $$
+begin
+  if (auth.jwt() ->> 'email') is distinct from 'OWNER_EMAIL_HERE' then raise exception 'not allowed'; end if;
+  return json_build_object(
+    'visits', (select value from stats where name = 'visits'),
+    'accounts', (select count(*) from accounts),
+    'users', coalesce((select json_agg(json_build_object('username', username, 'email', email, 'created_at', created_at) order by created_at desc) from accounts), '[]'::json));
+end $$;
+revoke execute on function public.admin_overview() from public, anon;
+grant execute on function public.admin_overview() to authenticated;

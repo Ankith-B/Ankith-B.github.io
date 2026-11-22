@@ -3,5 +3,5 @@
    Leave empty to hide the contact form. */
 window.CAD_CONFIG = {
   supabaseUrl: "",   // e.g. https://abcdxyz.supabase.co
-  supabaseKey: ""    // the "anon public" key
+  supabaseKey: "sb_publishable_xJVvNWmZNza210OZQOyFbQ_Az_-dMqD"
 };

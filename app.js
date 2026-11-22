@@ -244,7 +244,8 @@
   var sbOn = !!(CFG.supabaseUrl && CFG.supabaseKey);
   function sb(path, opts, token) {
     opts = opts || {};
-    var headers = { apikey: CFG.supabaseKey, Authorization: "Bearer " + (token || CFG.supabaseKey), "Content-Type": "application/json" };
+    var headers = { apikey: CFG.supabaseKey, "Content-Type": "application/json" };
+    if (token) headers.Authorization = "Bearer " + token;
     Object.keys(opts.headers || {}).forEach(function (k) { headers[k] = opts.headers[k]; });
     return fetch(CFG.supabaseUrl.replace(/\/$/, "") + path, { method: opts.method || "GET", headers: headers, body: opts.body })
       .then(function (r) {
@@ -326,7 +327,7 @@
     var back = el("button", { class: "back", type: "button", text: "\u2190 Back to site" });
     back.onclick = function () { location.hash = "#/"; };
     root.appendChild(back);
-    root.appendChild(el("div", { class: "d-head" }, [el("div", { class: "cat", text: "Owner only" }), el("h1", { text: "Inbox" })]));
+    root.appendChild(el("div", { class: "d-head" }, [el("div", { class: "cat", text: "Owner only" }), el("h1", { text: "Owner dashboard" })]));
     if (!sbOn) { root.appendChild(el("p", { text: "The inbox isn't connected yet. Add your Supabase details to config.js." })); return; }
     if (!isOwner()) { root.appendChild(el("p", { text: "Log in to the Owner account to view this page." })); return; }
     var o = owner();
@@ -348,7 +349,18 @@
     var out = el("button", { class: "btn line", type: "button", text: "Sign out of inbox", style: "color:var(--ink);border-color:var(--line);margin-bottom:20px" });
     out.onclick = function () { setOwner(null); renderInbox(); };
     var list = el("div", {}, [el("p", { text: "Loading\u2026" })]);
-    root.appendChild(out); root.appendChild(list);
+    var dash = el("div", { class: "dash" });
+    root.appendChild(out); root.appendChild(dash);
+    sb("/rest/v1/rpc/admin_overview", { method: "POST", body: "{}" }, o.token).then(function (d) {
+      dash.appendChild(el("div", { class: "kpis" }, [
+        el("div", { class: "kpi" }, [el("b", { class: "n-blue", text: fmt(d.visits || 0) }), el("span", { text: "Page visits" })]),
+        el("div", { class: "kpi" }, [el("b", { class: "n-green", text: fmt(d.accounts || 0) }), el("span", { text: "Accounts" })])]));
+      var rows = (d.users || []).map(function (u) { return el("tr", {}, [el("td", { text: u.username }), el("td", { text: u.email || "(none)" }), el("td", { text: new Date(u.created_at).toLocaleString() })]); });
+      dash.appendChild(el("h2", { text: "Accounts", style: "font-size:1.3rem;margin:26px 0 10px" }));
+      dash.appendChild(el("div", { class: "tablewrap" }, [el("table", { class: "t acc" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Username" }), el("th", { text: "Email" }), el("th", { text: "Created" })])]), el("tbody", {}, rows.length ? rows : [el("tr", {}, [el("td", { colspan: "3", text: "No accounts yet." })])])])]));
+      dash.appendChild(el("h2", { text: "Messages", style: "font-size:1.3rem;margin:30px 0 10px" }));
+      dash.appendChild(list);
+    }, function () { dash.appendChild(el("p", { text: "Couldn't load the dashboard. Check that the SQL was run with your owner email." })); dash.appendChild(list); });
     sb("/rest/v1/messages?select=*&order=created_at.desc", {}, o.token).then(function (rows) {
       list.textContent = "";
       if (!rows.length) { list.appendChild(el("p", { text: "No messages yet." })); return; }

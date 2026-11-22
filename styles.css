@@ -141,3 +141,9 @@ dialog .btn.solid{background:var(--accent)}dialog .btn.solid:hover{background:#2
 .stats .n-blue{color:#4aa3ff}.stats .n-green{color:#3ddc97}
 .stats span:nth-child(1) svg{color:#4aa3ff}.stats span:nth-child(2) svg{color:#3ddc97}
 .tile .cat{margin-bottom:6px}
+.kpis{display:flex;gap:16px;flex-wrap:wrap}.kpi{border:1px solid var(--line);border-radius:3px;padding:16px 26px;min-width:160px}
+.kpi b{display:block;font-size:2rem;line-height:1.2}.kpi span{color:var(--muted);font-size:.85rem}
+.kpi .n-blue{color:#1c6fe0}.kpi .n-green{color:#12a566}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:3px}
+.t.acc{border-collapse:collapse;width:100%;font-size:.92rem}.t.acc th,.t.acc td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+.t.acc thead th{background:#f3f4f6;font-size:.82rem}
