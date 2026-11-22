@@ -194,9 +194,10 @@
         el("p", { text: d.blurb || "" }),
         el("span", { class: "more" }, [el("span", { text: "Read more →" }), el("span", { text: saved.indexOf(d.id) >= 0 ? "★ Saved" : "" })])
       ]);
-      t.onclick = function () { location.hash = "#/d/" + d.id; };
+      t.onclick = function () { if (d.href) location.href = d.href; else location.hash = "#/d/" + d.id; };
       box.appendChild(t);
     });
+    for (var j = D.length % 3 ? 3 - (D.length % 3) : 0; j > 0; j--) box.appendChild(el("div", { class: "slot", "aria-hidden": "true" }));
   }
 
   /* ---------- detail view ---------- */
