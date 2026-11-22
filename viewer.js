@@ -83,4 +83,30 @@
     }
     s2.setBase(5.2); s2.state.rx = 0.55; s2.start();
   }
+
+  /* Liver, gallbladder and bile ducts from BodyParts3D (CC BY 4.0) via ashemag/human-atlas */
+  var v3 = document.getElementById("v3");
+  if (v3) {
+    fetch("liver.json").then(function (r) { return r.json(); }).then(function (data) {
+      var s = stage(v3), colors = { "Liver": 0x2f6ff0, "Gallbladder": 0x4fd1cf, "Bile duct": 0x7fe6c8, "Portal vein": 0x9fd0ff };
+      var box = new THREE.Box3(), meshes = {};
+      data.parts.forEach(function (p) {
+        var g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.Float32BufferAttribute(p.positions, 3));
+        g.setIndex(p.indices); g.computeVertexNormals();
+        var m = new THREE.Mesh(g, new THREE.MeshPhongMaterial({ color: colors[p.name] || 0x4fa3ff, transparent: true, opacity: p.name === "Liver" ? 0.62 : 0.95, shininess: 70, specular: 0x9fd0ff, side: THREE.DoubleSide }));
+        s.group.add(m); (meshes[p.name] = meshes[p.name] || []).push(m); if (p.name === "Liver") box.expandByObject(m);
+      });
+      var c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+      s.group.children.forEach(function (m) { m.position.sub(c); });
+      s.setBase(Math.max(sz.y, sz.x) * 2.6); s.state.rx = 0.1; s.start();
+      var ctl = document.getElementById("v3ctl");
+      [["Liver", ["Liver"], "#2f6ff0"], ["Portal vein", ["Portal vein"], "#9fd0ff"], ["Bile ducts", ["Bile duct"], "#7fe6c8"], ["Gallbladder", ["Gallbladder"], "#4fd1cf"]].forEach(function (it) {
+        var l = document.createElement("label"), cb = document.createElement("input"), sw = document.createElement("i");
+        cb.type = "checkbox"; cb.checked = true; sw.style.background = it[2];
+        cb.onchange = function () { it[1].forEach(function (n) { (meshes[n] || []).forEach(function (m) { m.visible = cb.checked; }); }); };
+        l.appendChild(cb); l.appendChild(sw); l.appendChild(document.createTextNode(it[0])); ctl.appendChild(l);
+      });
+    }).catch(function () { v3.innerHTML = '<p class="vmsg">The 3D model could not load.</p>'; });
+  }
 })();

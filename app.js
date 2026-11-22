@@ -188,8 +188,8 @@
     }
     var saved = savedList();
     D.forEach(function (d) {
-      var t = el("button", { class: "tile", type: "button", "aria-label": d.name + ", open full breakdown" }, [
-        el("h3", { text: d.name })
+      var t = el("button", { class: "tile", type: "button", "aria-label": d.name + " cure, open full breakdown" }, [
+        el("div", { class: "cat", text: "Cure" }), el("h3", { text: d.name })
       ]);
       t.onclick = function () { if (d.href) location.href = d.href; else location.hash = "#/d/" + d.id; };
       box.appendChild(t);
@@ -273,8 +273,7 @@
   function rpc(fn, args) { return sb("/rest/v1/rpc/" + fn, { method: "POST", body: JSON.stringify(args || {}) }); }
   function fmt(n) { return Number(n).toLocaleString(); }
   if (sbOn && $("#stats")) {
-    var seen = false; try { seen = sessionStorage.getItem("cad_seen") === "1"; } catch (e) {}
-    var p = seen ? rpc("get_stats") : rpc("bump_stat", { stat: "visits" }).then(function () { try { sessionStorage.setItem("cad_seen", "1"); } catch (e) {} return rpc("get_stats"); });
+    var p = rpc("bump_stat", { stat: "visits" }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); });
     p.then(function (r) {
       $("#nVisits").textContent = fmt(r.visits); $("#nAccounts").textContent = fmt(r.accounts); $("#stats").hidden = false;
     }, function () {});

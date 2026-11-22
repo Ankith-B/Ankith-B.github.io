@@ -137,3 +137,7 @@ dialog .btn.solid{background:var(--accent)}dialog .btn.solid:hover{background:#2
 .stats{display:flex;align-items:center;gap:16px;color:#b7c6e0;font-size:.9rem;font-variant-numeric:tabular-nums}
 .stats span{display:inline-flex;align-items:center;gap:6px}
 .stats svg{opacity:.85}
+
+.stats .n-blue{color:#4aa3ff}.stats .n-green{color:#3ddc97}
+.stats span:nth-child(1) svg{color:#4aa3ff}.stats span:nth-child(2) svg{color:#3ddc97}
+.tile .cat{margin-bottom:6px}
