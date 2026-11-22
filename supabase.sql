@@ -48,3 +48,38 @@ language sql security definer set search_path = public as $$
 $$;
 
 grant execute on function public.bump_stat(text), public.get_stats() to anon, authenticated;
+
+-- Accounts that work on every device. The table is locked; only these functions can touch it.
+create table if not exists public.accounts (
+  username text primary key check (username ~ '^[A-Za-z0-9_.-]{3,20}$'),
+  email text unique,
+  salt text not null,
+  pw_hash text not null
+);
+alter table public.accounts enable row level security;
+create unique index if not exists accounts_username_ci on public.accounts (lower(username));
+
+create or replace function public.acct_signup(uname text, mail text, salt text, pw_hash text) returns text
+language plpgsql security definer set search_path = public as $$
+begin
+  if exists (select 1 from accounts where lower(username) = lower(uname)) then return 'taken'; end if;
+  if coalesce(mail, '') <> '' and exists (select 1 from accounts where email = lower(mail)) then return 'email'; end if;
+  insert into accounts (username, email, salt, pw_hash) values (uname, nullif(lower(mail), ''), salt, pw_hash);
+  return 'ok';
+end $$;
+
+-- Returns the salt for a username or email (a stable fake salt if unknown, so lookups reveal nothing).
+create or replace function public.acct_salt(ident text) returns text
+language sql security definer set search_path = public as $$
+  select coalesce(
+    (select salt from accounts where lower(username) = lower(ident) or email = lower(ident) limit 1),
+    encode(sha256(convert_to('x' || lower(ident), 'UTF8')), 'base64'));
+$$;
+
+create or replace function public.acct_login(ident text, pw_hash text) returns text
+language sql security definer set search_path = public as $$
+  select username from accounts
+  where (lower(username) = lower(ident) or email = lower(ident)) and accounts.pw_hash = acct_login.pw_hash limit 1;
+$$;
+
+grant execute on function public.acct_signup(text, text, text, text), public.acct_salt(text), public.acct_login(text, text) to anon, authenticated;

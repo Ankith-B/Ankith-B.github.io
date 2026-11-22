@@ -16,7 +16,7 @@
   /* ---------- one-time reset ----------
      Bump RESET_VERSION to wipe all locally stored accounts, sessions and saved lists
      the next time each visitor opens the site. */
-  var RESET_VERSION = "2026-11-22-reset";
+  var RESET_VERSION = "2026-11-23-reset";
   try {
     if (localStorage.getItem("cad_reset") !== RESET_VERSION) {
       Object.keys(localStorage).forEach(function (k) { if (k.indexOf("cad_") === 0) localStorage.removeItem(k); });
@@ -82,11 +82,19 @@
     users: function () { return load("cad_users", []); },
     current: function () { return load("cad_session", null); },
     signup: function (username, email, pw) {
-      var users = Auth.users();
-      var u = username.toLowerCase(), e = (email || "").toLowerCase();
+      var e = (email || "").toLowerCase(), salt = randomSalt();
+      if (sbOn) {
+        return hash(pw, salt).then(function (h) {
+          return sb("/rest/v1/rpc/acct_signup", { method: "POST", body: JSON.stringify({ uname: username, mail: e, salt: salt, pw_hash: h }) });
+        }).then(function (r) {
+          if (r === "taken") throw "That username is taken.";
+          if (r === "email") throw "An account with that email already exists.";
+          save("cad_session", { username: username }); return username;
+        }, function (err) { if (typeof err === "string") throw err; throw "Could not reach the account service. Please try again."; });
+      }
+      var users = Auth.users(), u = username.toLowerCase();
       if (users.some(function (x) { return x.username.toLowerCase() === u; })) return Promise.reject("That username is taken.");
       if (e && users.some(function (x) { return x.email === e; })) return Promise.reject("An account with that email already exists.");
-      var salt = randomSalt();
       return hash(pw, salt).then(function (h) {
         users.push({ username: username, email: e, salt: salt, hash: h });
         if (!save("cad_users", users)) throw "Your browser blocked saving. Check privacy settings.";
@@ -95,9 +103,18 @@
       });
     },
     login: function (id, pw) {
-      var key = id.trim().toLowerCase();
+      var key = id.trim().toLowerCase(), bad = "Incorrect email, username or password.";
+      if (sbOn) {
+        return sb("/rest/v1/rpc/acct_salt", { method: "POST", body: JSON.stringify({ ident: key }) }).then(function (salt) {
+          return hash(pw, salt).then(function (h) {
+            return sb("/rest/v1/rpc/acct_login", { method: "POST", body: JSON.stringify({ ident: key, pw_hash: h }) });
+          });
+        }).then(function (name) {
+          if (!name) throw bad;
+          save("cad_session", { username: name }); return name;
+        }, function (err) { if (typeof err === "string") throw err; throw "Could not reach the account service. Please try again."; });
+      }
       var user = Auth.users().filter(function (x) { return x.username.toLowerCase() === key || (x.email && x.email === key); })[0];
-      var bad = "Incorrect email, username or password.";
       if (!user) return Promise.reject(bad);
       return hash(pw, user.salt).then(function (h) {
         if (h !== user.hash) throw bad;
@@ -176,7 +193,7 @@
     if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { err.textContent = "Enter a valid email address."; return; }
     if (p.length < 8) { err.textContent = "Password must be at least 8 characters."; return; }
     if (p !== p2) { err.textContent = "Passwords don't match."; return; }
-    Auth.signup(u, em, p).then(function (n) { if (!sbOn) ab("hit", "accounts").then(function (v) { show("#nAccounts", "accounts", v); }, function () {}); if (sbOn) rpc("bump_stat", { stat: "accounts" }).then(function () { return rpc("get_stats"); }).then(function (r) { var x = $("#nAccounts"); if (x) x.textContent = fmt(r.accounts); }, function () {}); return n; }).then(done, function (m) { err.textContent = String(m); });
+    Auth.signup(u, em, p).then(function (n) { if (!sbOn) ab("hit", "accounts2").then(function (v) { show("#nAccounts", "accounts", v); }, function () {}); if (sbOn) rpc("bump_stat", { stat: "accounts" }).then(function () { return rpc("get_stats"); }).then(function (r) { var x = $("#nAccounts"); if (x) x.textContent = fmt(r.accounts); }, function () {}); return n; }).then(done, function (m) { err.textContent = String(m); });
   });
 
   /* ---------- research grid ---------- */
@@ -297,7 +314,7 @@
         .then(function (r) { show("#nVisits", "visits", r.visits); show("#nAccounts", "accounts", r.accounts); }, function () {});
     } else {
       ab("hit", "visits").then(function (v) { show("#nVisits", "visits", v); }, function () {});
-      ab("get", "accounts").then(function (v) { show("#nAccounts", "accounts", v); }, function () {});
+      ab("get", "accounts2").then(function (v) { show("#nAccounts", "accounts", v); }, function () {});
     }
   }
 
