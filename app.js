@@ -138,6 +138,7 @@
   var dlg = $("#authDlg");
   function renderAuthSlot() {
     var slot = $("#authSlot"); slot.textContent = "";
+    var st = $("#stats"); if (st) { st.style.cursor = isOwner() ? "pointer" : ""; st.title = isOwner() ? "Open owner dashboard" : ""; }
     var s = Auth.current();
     if (s) {
       var out = el("button", { class: "btn line", type: "button", text: "Log out" });
@@ -305,13 +306,14 @@
   }
   function show(id, k, v) { var el = $(id); if (!el) return; if (v === null || v === undefined) return; if (k) { var c = cached(k); if (c !== null && v < c) v = c; keep(k, v); } el.textContent = fmt(v); }
   if ($("#stats")) {
+    $("#stats").onclick = function () { if (isOwner()) location.hash = "#/inbox"; };
     $("#nVisits").textContent = ""; $("#nAccounts").textContent = "";
     var c1 = cached("visits"), c2 = cached("accounts");
     if (c1 !== null) $("#nVisits").textContent = fmt(c1);
     if (c2 !== null) $("#nAccounts").textContent = fmt(c2);
     $("#stats").hidden = false;
     if (sbOn) {
-      rpc("bump_stat", { stat: "visits" }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
+      rpc("record_visit", { uname: (Auth.current() || {}).username || "" }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
         .then(function (r) { show("#nVisits", "visits", r.visits); show("#nAccounts", "accounts", r.accounts); }, function () {});
     } else {
       ab("hit", "visits").then(function (v) { show("#nVisits", "visits", v); }, function () {});
@@ -354,10 +356,12 @@
     sb("/rest/v1/rpc/admin_overview", { method: "POST", body: "{}" }, o.token).then(function (d) {
       dash.appendChild(el("div", { class: "kpis" }, [
         el("div", { class: "kpi" }, [el("b", { class: "n-blue", text: fmt(d.visits || 0) }), el("span", { text: "Page visits" })]),
+        el("div", { class: "kpi" }, [el("b", { text: fmt(d.guest_visits || 0) }), el("span", { text: "Guest visits (no account)" })]),
         el("div", { class: "kpi" }, [el("b", { class: "n-green", text: fmt(d.accounts || 0) }), el("span", { text: "Accounts" })])]));
-      var rows = (d.users || []).map(function (u) { return el("tr", {}, [el("td", { text: u.username }), el("td", { text: u.email || "(none)" }), el("td", { text: new Date(u.created_at).toLocaleString() })]); });
+      var rows = (d.users || []).map(function (u) { return el("tr", {}, [el("td", { text: u.username }), el("td", { text: u.email || "(none)" }), el("td", { text: fmt(u.visits || 0) }), el("td", { text: new Date(u.created_at).toLocaleString() })]); });
+      if (d.untracked) dash.appendChild(el("p", { class: "hint", text: fmt(d.untracked) + " earlier visits were counted before per-account tracking began and can\u2019t be attributed." }));
       dash.appendChild(el("h2", { text: "Accounts", style: "font-size:1.3rem;margin:26px 0 10px" }));
-      dash.appendChild(el("div", { class: "tablewrap" }, [el("table", { class: "t acc" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Username" }), el("th", { text: "Email" }), el("th", { text: "Created" })])]), el("tbody", {}, rows.length ? rows : [el("tr", {}, [el("td", { colspan: "3", text: "No accounts yet." })])])])]));
+      dash.appendChild(el("div", { class: "tablewrap" }, [el("table", { class: "t acc" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Username" }), el("th", { text: "Email" }), el("th", { text: "Visits" }), el("th", { text: "Created" })])]), el("tbody", {}, rows.length ? rows : [el("tr", {}, [el("td", { colspan: "4", text: "No accounts yet." })])])])]));
       dash.appendChild(el("h2", { text: "Messages", style: "font-size:1.3rem;margin:30px 0 10px" }));
       dash.appendChild(list);
     }, function () { dash.appendChild(el("p", { text: "Couldn't load the dashboard. Check that the SQL was run with your owner email." })); dash.appendChild(list); });
