@@ -24,5 +24,13 @@ window.DISEASES = [
     label: "Cure",
     blurb: "A cure for sickle cell disease: how much of the blood-forming system must be edited.",
     href: "sickle.html"
+  },
+  {
+    id: "cardiovascular-disease",
+    name: "High cholesterol and heart disease",
+    category: "Cure \u00b7 Cardiology",
+    label: "Cure",
+    blurb: "A one-time liver edit to lower LDL cholesterol for life: how much editing is enough, and what it does to heart attacks over decades.",
+    href: "cardio.html"
   }
 ];
