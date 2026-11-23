@@ -4,25 +4,25 @@ window.DISEASES = [
   {
     id: "cystinuria",
     name: "Cystinuria",
-    category: "Treatment \u00b7 Nephrology",
-    label: "Treatment",
+    category: "Cure \u00b7 Nephrology",
+    label: "Cure",
     blurb: "A model of kidney-stone formation predicts that 92% of crystal risk falls in an eight-hour night window, and that dosing time may matter more than drug potency.",
     href: "paper.html"
   },
   {
     id: "wilson-disease",
     name: "Wilson disease",
-    category: "Treatment \u00b7 Hepatology",
-    label: "Treatment",
-    blurb: "A treatment for Wilson disease: how much ATP7B correction is needed, by genotype.",
+    category: "Cure \u00b7 Hepatology",
+    label: "Cure",
+    blurb: "A cure for Wilson disease: how much ATP7B correction is needed, by genotype.",
     href: "wilson.html"
   },
   {
     id: "sickle-cell-disease",
     name: "Sickle cell disease",
-    category: "Treatment \u00b7 Hematology",
-    label: "Treatment",
-    blurb: "A treatment for sickle cell disease: how much of the blood-forming system must be edited.",
+    category: "Cure \u00b7 Hematology",
+    label: "Cure",
+    blurb: "A cure for sickle cell disease: how much of the blood-forming system must be edited.",
     href: "sickle.html"
   }
 ];
