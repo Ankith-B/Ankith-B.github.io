@@ -12,9 +12,9 @@ window.DISEASES = [
   {
     id: "wilson-disease",
     name: "Wilson disease",
-    category: "Cure \u00b7 Hepatology",
-    label: "Cure",
-    blurb: "A cure design target for Wilson disease: how much of the liver a gene-editing cure must correct.",
+    category: "Treatment \u00b7 Hepatology",
+    label: "Treatment",
+    blurb: "A treatment for Wilson disease: how much ATP7B correction is needed, by genotype.",
     href: "wilson.html"
   }
 ];
