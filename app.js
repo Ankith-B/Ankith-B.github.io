@@ -313,7 +313,7 @@
     if (c2 !== null) $("#nAccounts").textContent = fmt(c2);
     $("#stats").hidden = false;
     if (sbOn) {
-      rpc("record_visit", { uname: (Auth.current() || {}).username || "" }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
+      rpc("record_visit", { uname: (Auth.current() || {}).username || "" }).catch(function () { return rpc("bump_stat", { stat: "visits" }); }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
         .then(function (r) { show("#nVisits", "visits", r.visits); show("#nAccounts", "accounts", r.accounts); }, function () {});
     } else {
       ab("hit", "visits").then(function (v) { show("#nVisits", "visits", v); }, function () {});
