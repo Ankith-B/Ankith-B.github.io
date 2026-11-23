@@ -314,7 +314,7 @@
     $("#stats").hidden = false;
     if (sbOn) {
       rpc("record_visit", { uname: (Auth.current() || {}).username || "" }).catch(function () { return rpc("bump_stat", { stat: "visits" }); }).then(function () { return rpc("get_stats"); }, function () { return rpc("get_stats"); })
-        .then(function (r) { show("#nVisits", "visits", r.visits); show("#nAccounts", "accounts", r.accounts); }, function () {});
+        .then(function (r) { show("#nVisits", "visits", r.visits); show("#nAccounts", "accounts", r.accounts); if (r.today !== undefined && r.today !== null) { var tw = $("#todayWrap"); if (tw) tw.hidden = false; show("#nToday", null, r.today); } }, function () {});
     } else {
       ab("hit", "visits").then(function (v) { show("#nVisits", "visits", v); }, function () {});
       ab("get", "accounts2").then(function (v) { show("#nAccounts", "accounts", v); }, function () {});
