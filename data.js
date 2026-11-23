@@ -16,5 +16,13 @@ window.DISEASES = [
     label: "Treatment",
     blurb: "A treatment for Wilson disease: how much ATP7B correction is needed, by genotype.",
     href: "wilson.html"
+  },
+  {
+    id: "sickle-cell-disease",
+    name: "Sickle cell disease",
+    category: "Treatment \u00b7 Hematology",
+    label: "Treatment",
+    blurb: "A treatment for sickle cell disease: how much of the blood-forming system must be edited.",
+    href: "sickle.html"
   }
 ];
